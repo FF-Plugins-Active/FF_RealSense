@@ -27,7 +27,6 @@ public class FF_RealSense : ModuleRules
             string Location_Realsense = "../Source/FF_RealSense/ThirdParty/Android/include";
             PrivateIncludePaths.Add(Location_Realsense);
 
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Android", "libs", "libnative-lib.so"));
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Android", "libs", "librealsense2.so"));
 
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(ModuleDirectory, "FF_RealSense_UPL_Android.xml"));
