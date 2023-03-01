@@ -1,0 +1,11 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.FF_RealSense.cpp.obj": [
+			"FF_RealSense.init.gen.cpp.obj",
+			"FF_RealSenseBPLibrary.gen.cpp.obj",
+			"FF_RealSense.cpp.obj",
+			"FF_RealSenseBPLibrary.cpp.obj"
+		]
+	}
+}

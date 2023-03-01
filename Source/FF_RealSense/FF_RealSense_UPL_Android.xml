@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+		<log text="FF_RealSense"/>
+		<setBool result="bCpuArchSupported" value="false"/>
+		<isArch arch="arm64-v8a">
+			<setBool result="bCpuArchSupported" value="true"/>
+		</isArch>
+	</init>
+	
+	<resourceCopies>
+		<if condition="bCpuArchSupported">
+			<true>
+				
+				<log text="Copying libnative-lib.so"/>
+				<copyFile src="$S(PluginDir)/ThirdParty/Android/libs/libnative-lib.so"
+							dst="$S(BuildDir)/libs/$S(Architecture)/libnative-lib.so" />
+
+				<log text="Copying librealsense2.so"/>
+				<copyFile src="$S(PluginDir)/ThirdParty/Android/libs/librealsense2.so"
+							dst="$S(BuildDir)/libs/$S(Architecture)/librealsense2.so" />
+				
+			</true>
+		</if>
+	</resourceCopies>
+
+	<!-- optional libraries to load in GameActivity.java before libUnreal.so -->
+	<soLoadLibrary>
+		<if condition="bCpuArchSupported">
+			<true>
+				
+				<loadLibrary name="libnative-lib" failmsg="libnative-lib library not loaded and may be required for FF_RealSense." />
+				<loadLibrary name="librealsense2" failmsg="librealsense2 library not loaded and may be required for FF_RealSense." />
+				
+			</true>
+		</if>
+	</soLoadLibrary>
+</root>
