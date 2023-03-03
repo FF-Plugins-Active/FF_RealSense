@@ -36,9 +36,27 @@ public:
 	rs2_config* Rs_Config;
 	rs2_pipeline* Rs_Pipeline;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FVector2D Frame_Resolution;
-	
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Device_Firmware;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Device_Ip;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Device_Name;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Product_Id;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Product_Line;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Device_Serial;
+
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
@@ -52,11 +70,14 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Devices", Keywords = "intel, realsense, get, devices, list"), Category = "FF_Realsense|System")
-	static void Realsense_Get_Devices(URsDeviceList*& Out_Device_List, int32& Device_Count);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
+	static bool Realsense_Device_List_Get(URsDeviceList*& Out_Device_List, int32& Device_Count, FString& Out_Code);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "FF_Realsense|System")
+	static bool Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Each Device", Keywords = "intel, realsense, get, each, device"), Category = "FF_Realsense|System")
-	static bool Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, URsDeviceList* In_Device_List, int32 DeviceIndex);
+	static bool Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Init Pipeline", Keywords = "intel, realsense, pipeline, init"), Category = "FF_Realsense|System")
 	static bool Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, FVector2D In_Size, int32 StreamIndex = 0, int32 FPS = 30);

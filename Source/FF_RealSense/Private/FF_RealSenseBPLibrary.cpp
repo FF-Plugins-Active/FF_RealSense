@@ -9,33 +9,56 @@ UFF_RealSenseBPLibrary::UFF_RealSenseBPLibrary(const FObjectInitializer& ObjectI
 
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Get_Devices(URsDeviceList*& Out_Device_List, int32& Device_Count)
+bool UFF_RealSenseBPLibrary::Realsense_Device_List_Get(URsDeviceList*& Out_Device_List, int32& Device_Count, FString& Out_Code)
 {	
 	rs2_error* Rs_Error = 0;
 	rs2_context* Rs_Context = rs2_create_context(RS2_API_VERSION, &Rs_Error);
 	rs2_device_list* Rs_Device_List = rs2_query_devices(Rs_Context, &Rs_Error);
-	
+
 	URsDeviceList* DeviceList = NewObject<URsDeviceList>();
 	DeviceList->Rs_Device_List = Rs_Device_List;
 	DeviceList->Rs_Context = Rs_Context;
 	
 	Out_Device_List = DeviceList;
 	Device_Count = rs2_get_device_count(Rs_Device_List, &Rs_Error);
+
+	return true;
 }
 
-bool UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, URsDeviceList* In_Device_List, int32 DeviceIndex)
+bool UFF_RealSenseBPLibrary::Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code)
 {
 	if (IsValid(In_Device_List) == false)
 	{
+		Out_Code = "Device list is invalid.";
+		return false;
+	}
+
+	rs2_delete_device_list(In_Device_List->Rs_Device_List);
+	In_Device_List = nullptr;
+
+	return true;
+}
+
+bool UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex)
+{
+	if (IsValid(In_Device_List) == false)
+	{
+		Out_Code = "Device list is invalid.";
 		return false;
 	}
 
 	rs2_error* Rs_Error = 0;
 	rs2_device* EachDevice = rs2_create_device(In_Device_List->Rs_Device_List, DeviceIndex, &Rs_Error);
-
+	
 	URsDeviceObject* DeviceObject = NewObject<URsDeviceObject>();
 	DeviceObject->Rs_Device = EachDevice;
 	DeviceObject->Rs_Context = In_Device_List->Rs_Context;
+	DeviceObject->Device_Firmware = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_FIRMWARE_VERSION, NULL);
+	DeviceObject->Device_Ip = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_IP_ADDRESS, NULL);
+	DeviceObject->Device_Name = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_NAME, NULL);
+	DeviceObject->Product_Id = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_PRODUCT_ID, NULL);
+	DeviceObject->Product_Line = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_PRODUCT_LINE, NULL);
+	DeviceObject->Device_Serial = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_SERIAL_NUMBER, NULL);
 
 	Out_Device = DeviceObject;
 
@@ -76,6 +99,8 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*
 	rs2_delete_config(In_Device->Rs_Config);
 	rs2_delete_device(In_Device->Rs_Device);
 
+	In_Device = nullptr;
+
 	return true;
 }
 
@@ -93,7 +118,7 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Frames(FRsDelegateFrames DelegateFram
 		return;
 	}
 
-	AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [DelegateFrames, In_Device, Timeout]()
+	AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, Timeout]()
 		{
 			rs2_error* Rs_Error = 0;
 			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, &Rs_Error);

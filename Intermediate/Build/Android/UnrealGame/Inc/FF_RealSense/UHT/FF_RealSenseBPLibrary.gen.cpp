@@ -101,6 +101,30 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_Frame_Resolution_MetaData[];
 #endif
 		static const UECodeGen_Private::FStructPropertyParams NewProp_Frame_Resolution;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Device_Firmware_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Device_Firmware;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Device_Ip_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Device_Ip;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Device_Name_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Device_Name;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Product_Id_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Product_Id;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Product_Line_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Product_Line;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Device_Serial_MetaData[];
+#endif
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Device_Serial;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -122,9 +146,57 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
 	};
 #endif
-	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution = { "Frame_Resolution", nullptr, (EPropertyFlags)0x0010000000000004, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Frame_Resolution), Z_Construct_UScriptStruct_FVector2D, METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution_MetaData)) };
+	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution = { "Frame_Resolution", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Frame_Resolution), Z_Construct_UScriptStruct_FVector2D, METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Firmware_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Firmware = { "Device_Firmware", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Device_Firmware), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Firmware_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Firmware_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Ip_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Ip = { "Device_Ip", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Device_Ip), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Ip_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Ip_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Name_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Name = { "Device_Name", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Device_Name), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Name_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Name_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Id_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Id = { "Product_Id", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Product_Id), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Id_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Id_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Line_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Line = { "Product_Line", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Product_Line), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Line_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Line_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Serial_MetaData[] = {
+		{ "Category", "RsDeviceObject" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Serial = { "Device_Serial", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(URsDeviceObject, Device_Serial), METADATA_PARAMS(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Serial_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Serial_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_URsDeviceObject_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Frame_Resolution,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Firmware,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Ip,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Name,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Id,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Product_Line,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URsDeviceObject_Statics::NewProp_Device_Serial,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_URsDeviceObject_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<URsDeviceObject>::IsAbstract,
@@ -280,27 +352,39 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 	DEFINE_FUNCTION(UFF_RealSenseBPLibrary::execRealsense_Get_Each_Device)
 	{
 		P_GET_OBJECT_REF(URsDeviceObject,Z_Param_Out_Out_Device);
-		P_GET_OBJECT(URsDeviceList,Z_Param_In_Device_List);
+		P_GET_OBJECT_REF(URsDeviceList,Z_Param_Out_In_Device_List);
+		P_GET_PROPERTY_REF(FStrProperty,Z_Param_Out_Out_Code);
 		P_GET_PROPERTY(FIntProperty,Z_Param_DeviceIndex);
 		P_FINISH;
 		P_NATIVE_BEGIN;
-		*(bool*)Z_Param__Result=UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(Z_Param_Out_Out_Device,Z_Param_In_Device_List,Z_Param_DeviceIndex);
+		*(bool*)Z_Param__Result=UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(Z_Param_Out_Out_Device,Z_Param_Out_In_Device_List,Z_Param_Out_Out_Code,Z_Param_DeviceIndex);
 		P_NATIVE_END;
 	}
-	DEFINE_FUNCTION(UFF_RealSenseBPLibrary::execRealsense_Get_Devices)
+	DEFINE_FUNCTION(UFF_RealSenseBPLibrary::execRealsense_Device_List_Delete)
+	{
+		P_GET_OBJECT_REF(URsDeviceList,Z_Param_Out_In_Device_List);
+		P_GET_PROPERTY_REF(FStrProperty,Z_Param_Out_Out_Code);
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		*(bool*)Z_Param__Result=UFF_RealSenseBPLibrary::Realsense_Device_List_Delete(Z_Param_Out_In_Device_List,Z_Param_Out_Out_Code);
+		P_NATIVE_END;
+	}
+	DEFINE_FUNCTION(UFF_RealSenseBPLibrary::execRealsense_Device_List_Get)
 	{
 		P_GET_OBJECT_REF(URsDeviceList,Z_Param_Out_Out_Device_List);
 		P_GET_PROPERTY_REF(FIntProperty,Z_Param_Out_Device_Count);
+		P_GET_PROPERTY_REF(FStrProperty,Z_Param_Out_Out_Code);
 		P_FINISH;
 		P_NATIVE_BEGIN;
-		UFF_RealSenseBPLibrary::Realsense_Get_Devices(Z_Param_Out_Out_Device_List,Z_Param_Out_Device_Count);
+		*(bool*)Z_Param__Result=UFF_RealSenseBPLibrary::Realsense_Device_List_Get(Z_Param_Out_Out_Device_List,Z_Param_Out_Device_Count,Z_Param_Out_Out_Code);
 		P_NATIVE_END;
 	}
 	void UFF_RealSenseBPLibrary::StaticRegisterNativesUFF_RealSenseBPLibrary()
 	{
 		UClass* Class = UFF_RealSenseBPLibrary::StaticClass();
 		static const FNameNativePtrPair Funcs[] = {
-			{ "Realsense_Get_Devices", &UFF_RealSenseBPLibrary::execRealsense_Get_Devices },
+			{ "Realsense_Device_List_Delete", &UFF_RealSenseBPLibrary::execRealsense_Device_List_Delete },
+			{ "Realsense_Device_List_Get", &UFF_RealSenseBPLibrary::execRealsense_Device_List_Get },
 			{ "Realsense_Get_Each_Device", &UFF_RealSenseBPLibrary::execRealsense_Get_Each_Device },
 			{ "Realsense_Get_Frames", &UFF_RealSenseBPLibrary::execRealsense_Get_Frames },
 			{ "Realsense_Pipeline_Init", &UFF_RealSenseBPLibrary::execRealsense_Pipeline_Init },
@@ -308,42 +392,103 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		};
 		FNativeFunctionRegistrar::RegisterFunctions(Class, Funcs, UE_ARRAY_COUNT(Funcs));
 	}
-	struct Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics
+	struct Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics
 	{
-		struct FF_RealSenseBPLibrary_eventRealsense_Get_Devices_Parms
+		struct FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms
 		{
-			URsDeviceList* Out_Device_List;
-			int32 Device_Count;
+			URsDeviceList* In_Device_List;
+			FString Out_Code;
+			bool ReturnValue;
 		};
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_Out_Device_List;
-		static const UECodeGen_Private::FIntPropertyParams NewProp_Device_Count;
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_In_Device_List;
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Out_Code;
+		static void NewProp_ReturnValue_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
 #endif
 		static const UECodeGen_Private::FFunctionParams FuncParams;
 	};
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::NewProp_Out_Device_List = { "Out_Device_List", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Devices_Parms, Out_Device_List), Z_Construct_UClass_URsDeviceList_NoRegister, METADATA_PARAMS(nullptr, 0) };
-	const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::NewProp_Device_Count = { "Device_Count", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Devices_Parms, Device_Count), METADATA_PARAMS(nullptr, 0) };
-	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::PropPointers[] = {
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::NewProp_Out_Device_List,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::NewProp_Device_Count,
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_In_Device_List = { "In_Device_List", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms, In_Device_List), Z_Construct_UClass_URsDeviceList_NoRegister, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_Out_Code = { "Out_Code", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms, Out_Code), METADATA_PARAMS(nullptr, 0) };
+	void Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms*)Obj)->ReturnValue = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, sizeof(bool), sizeof(FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms), &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_ReturnValue_SetBit, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_In_Device_List,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_Out_Code,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::NewProp_ReturnValue,
 	};
 #if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::Function_MetaDataParams[] = {
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::Function_MetaDataParams[] = {
 		{ "Category", "FF_Realsense|System" },
-		{ "DisplayName", "Realsense Get Devices" },
-		{ "Keywords", "intel, realsense, get, devices, list" },
+		{ "DisplayName", "Realsense Delete Device List" },
+		{ "Keywords", "intel, realsense, devices, list, delete, remove" },
 		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
 	};
 #endif
-	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_UFF_RealSenseBPLibrary, nullptr, "Realsense_Get_Devices", nullptr, nullptr, sizeof(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::FF_RealSenseBPLibrary_eventRealsense_Get_Devices_Parms), Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04422401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::Function_MetaDataParams)) };
-	UFunction* Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices()
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_UFF_RealSenseBPLibrary, nullptr, "Realsense_Device_List_Delete", nullptr, nullptr, sizeof(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::FF_RealSenseBPLibrary_eventRealsense_Device_List_Delete_Parms), Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04422401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete()
 	{
 		static UFunction* ReturnFunction = nullptr;
 		if (!ReturnFunction)
 		{
-			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices_Statics::FuncParams);
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics
+	{
+		struct FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms
+		{
+			URsDeviceList* Out_Device_List;
+			int32 Device_Count;
+			FString Out_Code;
+			bool ReturnValue;
+		};
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_Out_Device_List;
+		static const UECodeGen_Private::FIntPropertyParams NewProp_Device_Count;
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Out_Code;
+		static void NewProp_ReturnValue_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Out_Device_List = { "Out_Device_List", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms, Out_Device_List), Z_Construct_UClass_URsDeviceList_NoRegister, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Device_Count = { "Device_Count", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms, Device_Count), METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Out_Code = { "Out_Code", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms, Out_Code), METADATA_PARAMS(nullptr, 0) };
+	void Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms*)Obj)->ReturnValue = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, sizeof(bool), sizeof(FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms), &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_ReturnValue_SetBit, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Out_Device_List,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Device_Count,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_Out_Code,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::NewProp_ReturnValue,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::Function_MetaDataParams[] = {
+		{ "Category", "FF_Realsense|System" },
+		{ "DisplayName", "Realsense Get Device List" },
+		{ "Keywords", "intel, realsense, devices, list, get" },
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_UFF_RealSenseBPLibrary, nullptr, "Realsense_Device_List_Get", nullptr, nullptr, sizeof(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::FF_RealSenseBPLibrary_eventRealsense_Device_List_Get_Parms), Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04422401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -353,11 +498,13 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		{
 			URsDeviceObject* Out_Device;
 			URsDeviceList* In_Device_List;
+			FString Out_Code;
 			int32 DeviceIndex;
 			bool ReturnValue;
 		};
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_Out_Device;
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_In_Device_List;
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Out_Code;
 		static const UECodeGen_Private::FIntPropertyParams NewProp_DeviceIndex;
 		static void NewProp_ReturnValue_SetBit(void* Obj);
 		static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
@@ -368,7 +515,8 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		static const UECodeGen_Private::FFunctionParams FuncParams;
 	};
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_Out_Device = { "Out_Device", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Each_Device_Parms, Out_Device), Z_Construct_UClass_URsDeviceObject_NoRegister, METADATA_PARAMS(nullptr, 0) };
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_In_Device_List = { "In_Device_List", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Each_Device_Parms, In_Device_List), Z_Construct_UClass_URsDeviceList_NoRegister, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_In_Device_List = { "In_Device_List", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Each_Device_Parms, In_Device_List), Z_Construct_UClass_URsDeviceList_NoRegister, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_Out_Code = { "Out_Code", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Each_Device_Parms, Out_Code), METADATA_PARAMS(nullptr, 0) };
 	const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_DeviceIndex = { "DeviceIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(FF_RealSenseBPLibrary_eventRealsense_Get_Each_Device_Parms, DeviceIndex), METADATA_PARAMS(nullptr, 0) };
 	void Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_ReturnValue_SetBit(void* Obj)
 	{
@@ -378,6 +526,7 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_Out_Device,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_In_Device_List,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_Out_Code,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_DeviceIndex,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device_Statics::NewProp_ReturnValue,
 	};
@@ -565,8 +714,9 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		(UObject* (*)())Z_Construct_UPackage__Script_FF_RealSense,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_UFF_RealSenseBPLibrary_Statics::FuncInfo[] = {
-		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Devices, "Realsense_Get_Devices" }, // 1286196659
-		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device, "Realsense_Get_Each_Device" }, // 2046629068
+		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Delete, "Realsense_Device_List_Delete" }, // 1555837744
+		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Device_List_Get, "Realsense_Device_List_Get" }, // 114925573
+		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Each_Device, "Realsense_Get_Each_Device" }, // 1411963308
 		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Get_Frames, "Realsense_Get_Frames" }, // 1527718991
 		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Pipeline_Init, "Realsense_Pipeline_Init" }, // 403550829
 		{ &Z_Construct_UFunction_UFF_RealSenseBPLibrary_Realsense_Pipeline_Stop, "Realsense_Pipeline_Stop" }, // 3115270727
@@ -615,10 +765,10 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Projects_FROZEN_SDKs_FF_Plugins_Mobile_Plugins_FF_RealSense_Source_FF_RealSense_Public_FF_RealSenseBPLibrary_h_Statics::ClassInfo[] = {
 		{ Z_Construct_UClass_URsDeviceList, URsDeviceList::StaticClass, TEXT("URsDeviceList"), &Z_Registration_Info_UClass_URsDeviceList, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URsDeviceList), 1090655853U) },
-		{ Z_Construct_UClass_URsDeviceObject, URsDeviceObject::StaticClass, TEXT("URsDeviceObject"), &Z_Registration_Info_UClass_URsDeviceObject, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URsDeviceObject), 1779257310U) },
-		{ Z_Construct_UClass_UFF_RealSenseBPLibrary, UFF_RealSenseBPLibrary::StaticClass, TEXT("UFF_RealSenseBPLibrary"), &Z_Registration_Info_UClass_UFF_RealSenseBPLibrary, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UFF_RealSenseBPLibrary), 63020590U) },
+		{ Z_Construct_UClass_URsDeviceObject, URsDeviceObject::StaticClass, TEXT("URsDeviceObject"), &Z_Registration_Info_UClass_URsDeviceObject, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URsDeviceObject), 2052621500U) },
+		{ Z_Construct_UClass_UFF_RealSenseBPLibrary, UFF_RealSenseBPLibrary::StaticClass, TEXT("UFF_RealSenseBPLibrary"), &Z_Registration_Info_UClass_UFF_RealSenseBPLibrary, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UFF_RealSenseBPLibrary), 3201959242U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Projects_FROZEN_SDKs_FF_Plugins_Mobile_Plugins_FF_RealSense_Source_FF_RealSense_Public_FF_RealSenseBPLibrary_h_2228052502(TEXT("/Script/FF_RealSense"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Projects_FROZEN_SDKs_FF_Plugins_Mobile_Plugins_FF_RealSense_Source_FF_RealSense_Public_FF_RealSenseBPLibrary_h_3567174466(TEXT("/Script/FF_RealSense"),
 		Z_CompiledInDeferFile_FID_Projects_FROZEN_SDKs_FF_Plugins_Mobile_Plugins_FF_RealSense_Source_FF_RealSense_Public_FF_RealSenseBPLibrary_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Projects_FROZEN_SDKs_FF_Plugins_Mobile_Plugins_FF_RealSense_Source_FF_RealSense_Public_FF_RealSenseBPLibrary_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
