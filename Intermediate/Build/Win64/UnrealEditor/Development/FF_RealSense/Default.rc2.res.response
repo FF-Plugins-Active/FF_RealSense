@@ -69,5 +69,5 @@
 /DBUILD_ICON_FILE_NAME="\"..\\Build\\Windows\\Resources\\Default.ico\""
 /DPROJECT_COPYRIGHT_STRING="Fill out your copyright notice in the Description page of Project Settings."
 /DPROJECT_PRODUCT_IDENTIFIER=FF_Plugins_Mobile
-/fo "D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\Default.rc2.res"
+/fo "E:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\Default.rc2.res"
 "..\Build\Windows\Resources\Default.rc2"

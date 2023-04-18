@@ -73,6 +73,9 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FRsDelegateFrames, bool, bIsSuccessfull, FStr
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateDistance, bool, bIsSuccessfull, float, Out_Distance, FString, Out_Code);
 
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateRotation, bool, bIsSuccessfull, FRotator, Out_Distance, FString, Out_Code);
+
 UCLASS()
 class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 {
@@ -101,8 +104,5 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Distance", Keywords = "intel, realsense, get, distance"), Category = "FF_Realsense")
 	static void Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout = 1);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Export Ply", Keywords = "intel, realsense, export, ply, 3d"), Category = "FF_Realsense")
-	static void Realsense_Export_Ply(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FString In_Path, int32 Timeout = 1);
 
 };

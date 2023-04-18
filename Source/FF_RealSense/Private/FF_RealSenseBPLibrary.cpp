@@ -87,12 +87,11 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 		break;
 	}
 
-	rs2_error* Rs_Error = 0;
-	rs2_config* Rs_Config = rs2_create_config(&Rs_Error);
-	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, In_Size.X, In_Size.Y, RsFormat, FPS, &Rs_Error);
+	rs2_config* Rs_Config = rs2_create_config(NULL);
+	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, In_Size.X, In_Size.Y, RsFormat, FPS, NULL);
 
-	rs2_pipeline* Rs_Pipeline = rs2_create_pipeline(In_Device->Rs_Context, &Rs_Error);
-	rs2_pipeline_profile* Rs_Pipeline_Profile = rs2_pipeline_start_with_config(Rs_Pipeline, Rs_Config, &Rs_Error);
+	rs2_pipeline* Rs_Pipeline = rs2_create_pipeline(In_Device->Rs_Context, NULL);
+	rs2_pipeline_profile* Rs_Pipeline_Profile = rs2_pipeline_start_with_config(Rs_Pipeline, Rs_Config, NULL);
 
 	In_Device->Rs_Pipeline = Rs_Pipeline;
 	In_Device->Frame_Resolution = In_Size;
@@ -143,12 +142,11 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFram
 
 	AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, In_T2D, Timeout]()
 		{
-			rs2_error* Rs_Error = 0;
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, &Rs_Error);
-			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, &Rs_Error);
+			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
+			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-			int64 Buffer_Size = rs2_get_frame_data_size(EachFrame, &Rs_Error);
-			const uint8_t* FrameBuffer = (const uint8_t*)(rs2_get_frame_data(EachFrame, &Rs_Error));
+			int64 Buffer_Size = rs2_get_frame_data_size(EachFrame, NULL);
+			const uint8_t* FrameBuffer = (const uint8_t*)(rs2_get_frame_data(EachFrame, NULL));
 
 			rs2_release_frame(EachFrame);
 			rs2_release_frame(Rs_Frames);
@@ -187,11 +185,10 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 
 	AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device, Origin, Timeout]()
 		{
-			rs2_error* Rs_Error = 0;
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, &Rs_Error);
-			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, &Rs_Error);
+			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
+			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, NULL);
 			
-			if (rs2_is_frame_extendable_to(EachFrame, RS2_EXTENSION_DEPTH_FRAME, &Rs_Error) != 0)
+			if (rs2_is_frame_extendable_to(EachFrame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
 			{
 				int32 Width = rs2_get_frame_width(EachFrame, NULL);
 				int32 Height = rs2_get_frame_height(EachFrame, NULL);
@@ -218,71 +215,6 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 					}
 				);
 			}
-		}
-	);
-}
-
-void UFF_RealSenseBPLibrary::Realsense_Export_Ply(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FString In_Path, int32 Timeout)
-{
-	if (IsValid(In_Device) == false)
-	{
-		DelegateDistance.Execute(false, 0, "Device object is not valid.");
-		return;
-	}
-
-	if (!In_Device->Rs_Pipeline)
-	{
-		DelegateDistance.Execute(false, 0, "Capture pipeline is not valid.");
-		return;
-	}
-
-	AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device, In_Path, Timeout]()
-		{
-			rs2_error* Rs_Error = 0;
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, &Rs_Error);
-			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, &Rs_Error);
-
-			// Sensor List.
-			rs2_sensor_list* Sensor_List = rs2_query_sensors(In_Device->Rs_Device, NULL);
-			int32 Count_Sensors = rs2_get_sensors_count(Sensor_List, NULL);
-
-			rs2_sensor* Sensors;
-			for (int32 Index_Sensor = 0; Index_Sensor < Count_Sensors; Index_Sensor++)
-			{
-				Sensors = rs2_create_sensor(Sensor_List, Index_Sensor, NULL);
-			}
-
-			// Stream Profiles.
-			rs2_stream_profile_list* Stream_Profile_List = rs2_get_active_streams(Sensors, NULL);
-			int32 Count_Profiles = rs2_get_stream_profiles_count(Stream_Profile_List, NULL);
-
-			const rs2_stream_profile* Profile;
-			for (int32 Index_Profile = 0; Index_Profile < Count_Profiles; Index_Profile++)
-			{
-				Profile = rs2_get_stream_profile(Stream_Profile_List, Index_Profile, NULL);
-			}
-
-			
-
-			rs2_frame* Points_Frame = rs2_allocate_points(NULL, Profile, EachFrame, NULL);
-
-			// Export Operation.
-			rs2_export_to_ply(Points_Frame, TCHAR_TO_UTF8(*In_Path), EachFrame, NULL);
-
-			// Release Garbages.
-			rs2_delete_sensor(Sensors);
-			rs2_delete_sensor_list(Sensor_List);
-			rs2_delete_stream_profiles_list(Stream_Profile_List);
-
-			rs2_release_frame(Points_Frame);
-			rs2_release_frame(EachFrame);
-			rs2_release_frame(Rs_Frames);
-
-			AsyncTask(ENamedThreads::GameThread, [DelegateDistance]()
-				{
-					DelegateDistance.ExecuteIfBound(true, 0, "Frames successfully captured.");
-				}
-			);
 		}
 	);
 }

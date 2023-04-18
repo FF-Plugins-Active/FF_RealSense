@@ -10,6 +10,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 // Cross Module References
 	COREUOBJECT_API UClass* Z_Construct_UClass_UObject();
+	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector2D();
 	ENGINE_API UClass* Z_Construct_UClass_UBlueprintFunctionLibrary();
 	ENGINE_API UClass* Z_Construct_UClass_UTexture2D_NoRegister();
@@ -22,6 +23,7 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 	FF_REALSENSE_API UEnum* Z_Construct_UEnum_FF_RealSense_ERsStreamType();
 	FF_REALSENSE_API UFunction* Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateDistance__DelegateSignature();
 	FF_REALSENSE_API UFunction* Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateFrames__DelegateSignature();
+	FF_REALSENSE_API UFunction* Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature();
 	UPackage* Z_Construct_UPackage__Script_FF_RealSense();
 // End Cross Module References
 	static FEnumRegistrationInfo Z_Registration_Info_UEnum_ERsStreamType;
@@ -369,6 +371,51 @@ void EmptyLinkFunctionForGeneratedCodeFF_RealSenseBPLibrary() {}
 		if (!ReturnFunction)
 		{
 			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateDistance__DelegateSignature_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics
+	{
+		struct _Script_FF_RealSense_eventRsDelegateRotation_Parms
+		{
+			bool bIsSuccessfull;
+			FRotator Out_Distance;
+			FString Out_Code;
+		};
+		static void NewProp_bIsSuccessfull_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsSuccessfull;
+		static const UECodeGen_Private::FStructPropertyParams NewProp_Out_Distance;
+		static const UECodeGen_Private::FStrPropertyParams NewProp_Out_Code;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+	void Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_bIsSuccessfull_SetBit(void* Obj)
+	{
+		((_Script_FF_RealSense_eventRsDelegateRotation_Parms*)Obj)->bIsSuccessfull = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_bIsSuccessfull = { "bIsSuccessfull", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, sizeof(bool), sizeof(_Script_FF_RealSense_eventRsDelegateRotation_Parms), &Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_bIsSuccessfull_SetBit, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FStructPropertyParams Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_Out_Distance = { "Out_Distance", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(_Script_FF_RealSense_eventRsDelegateRotation_Parms, Out_Distance), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FStrPropertyParams Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_Out_Code = { "Out_Code", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(_Script_FF_RealSense_eventRsDelegateRotation_Parms, Out_Code), METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_bIsSuccessfull,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_Out_Distance,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::NewProp_Out_Code,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "Public/FF_RealSenseBPLibrary.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::FuncParams = { (UObject*(*)())Z_Construct_UPackage__Script_FF_RealSense, nullptr, "RsDelegateRotation__DelegateSignature", nullptr, nullptr, sizeof(Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::_Script_FF_RealSense_eventRsDelegateRotation_Parms), Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00120004, 0, 0, METADATA_PARAMS(Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UDelegateFunction_FF_RealSense_RsDelegateRotation__DelegateSignature_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}

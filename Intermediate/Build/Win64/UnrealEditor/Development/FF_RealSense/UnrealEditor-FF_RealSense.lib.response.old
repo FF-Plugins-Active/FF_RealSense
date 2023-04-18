@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-FF_RealSense.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Intermediate\Build\Win64\FF_Plugins_MobileEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\Module.FF_RealSense.cpp.obj"
+"D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\Default.rc2.res"
+/OUT:"D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\UnrealEditor-FF_RealSense.lib"

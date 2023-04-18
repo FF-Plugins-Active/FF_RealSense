@@ -1,6 +1,6 @@
 D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Intermediate\Build\Win64\UnrealEditor\Development\FF_RealSense\Module.FF_RealSense.cpp
 /I .
-/I D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Source\FF_RealSense\ThirdParty
+/I D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Source\FF_RealSense\ThirdParty\Windows\include
 /I D:\Epic\Projects\FROZEN\SDKs\FF_Plugins_Mobile\Plugins\FF_RealSense\Source\FF_RealSense\Private
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\CoreUObject\UHT
 /I Runtime
