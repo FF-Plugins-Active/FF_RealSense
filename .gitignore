@@ -1,2 +1,6 @@
 # this file is bigger than 100mb so we will publish it as .zip file.
 /Source/FF_RealSense/ThirdParty/Android/libs/librealsense2.so
+
+# Compiled source files for the engine to use
+Binaries/
+Intermediate/
