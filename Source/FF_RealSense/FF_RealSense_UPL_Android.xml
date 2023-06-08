@@ -9,6 +9,31 @@
 		</isArch>
 	</init>
 
+	<prebuildCopies>
+		<copyDir src="$S(PluginDir)/Private/Java" dst="$S(BuildDir)/src/com/Plugins/FF_RealSense" />
+	</prebuildCopies>
+
+	<gradleProperties>
+		<insert>
+			android.useAndroidX=true
+			android.enableJetifier=true
+		</insert>
+	</gradleProperties>
+
+	<proguardAdditions>
+		<insert>
+			-dontwarn com.Plugins.**
+			-keep class com.Plugins.** { *; }
+			-keep interface com.Plugins.** { *; }
+			-keep public class com.Plugins.FF_RealSense.** { public protected *; }
+
+			-dontwarn androidx.**
+			-keep class androidx.** { *; }
+			-keep interface androidx.** { *; }
+
+		</insert>
+	</proguardAdditions>
+
 	<androidManifestUpdates>
 		<if condition="bCpuArchSupported">
 			<true>
