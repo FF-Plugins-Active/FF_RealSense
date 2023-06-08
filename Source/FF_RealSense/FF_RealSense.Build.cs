@@ -16,8 +16,12 @@ public class FF_RealSense : ModuleRules
             PrivateIncludePaths.Add(Location_Realsense);
 
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.lib"));
-            RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.dll"));
-            PublicDelayLoadDLLs.Add("realsense2.dll");
+            
+			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.dll"));
+            RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "Intel.Realsense.dll"));
+            
+			PublicDelayLoadDLLs.Add("realsense2.dll");
+            PublicDelayLoadDLLs.Add("Intel.Realsense.dll");
         }
 
         if (UnrealTargetPlatform.Android == Target.Platform)

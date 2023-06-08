@@ -5,10 +5,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 THIRD_PARTY_INCLUDES_START
-#include <librealsense2/rs.h>
 #include <librealsense2/rs.hpp>
-#include <librealsense2/h/rs_pipeline.h>
-#include <librealsense2/h/rs_frame.h>
 THIRD_PARTY_INCLUDES_END
 
 #include "FF_RealSenseBPLibrary.generated.h"
@@ -121,7 +118,7 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	static bool Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*& In_Device);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Create Texture2D", Keywords = "intel, realsense, get, frames, create, texture, 2d, t2d"), Category = "FF_Realsense")
-	static void Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb);
+	static void Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb, bool bIsDepth);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Stream", Keywords = "intel, realsense, get, frames"), Category = "FF_Realsense")
 	static void Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& In_T2D, int32 Timeout = 1);

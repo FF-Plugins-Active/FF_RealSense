@@ -12,7 +12,7 @@ THIRD_PARTY_INCLUDES_END
 #endif
 
 UFF_RealSenseBPLibrary::UFF_RealSenseBPLibrary(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }
@@ -36,13 +36,20 @@ void UFF_RealSenseBPLibrary::Realsense_Init_Android()
 bool UFF_RealSenseBPLibrary::Realsense_Device_List_Get(URsDeviceList*& Out_Device_List)
 {
 	rs2_error* Rs_Error = 0;
+
 	rs2_context* Rs_Context = rs2_create_context(RS2_API_VERSION, &Rs_Error);
 	rs2_device_list* Rs_Device_List = rs2_query_devices(Rs_Context, &Rs_Error);
+	int32 DeviceCount = rs2_get_device_count(Rs_Device_List, NULL);
+
+	if (DeviceCount == 0)
+	{
+		return false;
+	}
 
 	URsDeviceList* DeviceList = NewObject<URsDeviceList>();
 	DeviceList->Rs_Device_List = Rs_Device_List;
 	DeviceList->Rs_Context = Rs_Context;
-	DeviceList->Rs_Device_Count = rs2_get_device_count(Rs_Device_List, NULL);
+	DeviceList->Rs_Device_Count = DeviceCount;
 
 	Out_Device_List = DeviceList;
 
@@ -71,8 +78,18 @@ bool UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(URsDeviceObject*& Out_Dev
 		return false;
 	}
 
+	if (In_Device_List->Rs_Device_Count == 0)
+	{
+		return false;
+	}
+
 	rs2_error* Rs_Error = 0;
 	rs2_device* EachDevice = rs2_create_device(In_Device_List->Rs_Device_List, DeviceIndex, &Rs_Error);
+
+	if (!EachDevice)
+	{
+		return false;
+	}
 
 	URsDeviceObject* DeviceObject = NewObject<URsDeviceObject>();
 	DeviceObject->Rs_Device = EachDevice;
@@ -105,7 +122,7 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 		RsStreamType = RS2_STREAM_COLOR;
 		RsFormat = RS2_FORMAT_BGRA8;
 		break;
-	
+
 	case ERsStreamType::Infrared:
 		RsStreamType = RS2_STREAM_INFRARED;
 		RsFormat = RS2_FORMAT_BGRA8;
@@ -121,8 +138,8 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 	switch (In_Size)
 	{
 	case ERsResolutions::Reso_1280_800:
-		
-		if (RsStreamType == RS2_STREAM_INFRARED || RsStreamType == RS2_STREAM_INFRARED)
+
+		if (StreamType == ERsStreamType::Infrared || StreamType == ERsStreamType::Depth)
 		{
 			Size = FVector2D(1280, 720);
 		}
@@ -160,12 +177,12 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 	In_Device->Rs_Pipeline = Rs_Pipeline;
 	In_Device->Frame_Resolution = Size;
 	In_Device->Rs_Config = Rs_Config;
-	
-	if (RsStreamType == RS2_STREAM_INFRARED)
+
+	if (StreamType == ERsStreamType::Depth)
 	{
 		In_Device->bIsDepth = true;
 	}
-	
+
 	return true;
 }
 
@@ -187,12 +204,19 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*
 	return true;
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb)
+void UFF_RealSenseBPLibrary::Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb, bool bIsDepth)
 {
-	UTexture2D* T2D = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-	T2D->SRGB = bSrgb;
+	if (bIsDepth == true)
+	{
+		Out_T2D = UTexture2D::CreateTransient(Size.X, Size.Y, PF_R8G8B8A8);
+	}
 
-	Out_T2D = T2D;
+	else
+	{
+		Out_T2D = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+	}
+
+	Out_T2D->SRGB = bSrgb;
 }
 
 void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& In_T2D, int32 Timeout)
@@ -212,28 +236,44 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFram
 	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [DelegateFrames, In_Device, In_T2D, Timeout]()
 		{
 			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
-			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, NULL);
+			rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
+			
+			int64 Buffer_Size = 0;
+			uint8_t* FrameBuffer = nullptr;
+			if (In_Device->bIsDepth)
+			{
+				rs2_processing_block* Colorizer = rs2_create_colorizer(NULL);
+				rs2_frame_queue* frame_queue = rs2_create_frame_queue(1, NULL);
+				rs2_start_processing_queue(Colorizer, frame_queue, NULL);
+				rs2_frame_add_ref(First_Frame, NULL);
+				rs2_process_frame(Colorizer, First_Frame, NULL);
 
-			rs2_processing_block* Colorizer = rs2_create_colorizer(NULL);
-			rs2_frame_queue* frame_queue = rs2_create_frame_queue(1, NULL);
-			rs2_start_processing_queue(Colorizer, frame_queue, NULL);
-			rs2_frame_add_ref(Rs_Frames, NULL);
-			rs2_frame* colorized_frame = rs2_wait_for_frame(frame_queue, 100, NULL);
+				rs2_frame* colorized_frame = rs2_wait_for_frame(frame_queue, Timeout, NULL);
 
-			int64 Buffer_Size = rs2_get_frame_data_size(colorized_frame, NULL);
-			const uint8_t* FrameBuffer = (const uint8_t*)(rs2_get_frame_data(colorized_frame, NULL));
+				Buffer_Size = rs2_get_frame_data_size(colorized_frame, NULL);
+				FrameBuffer = (uint8_t*)(rs2_get_frame_data(colorized_frame, NULL));
 
-			rs2_release_frame(EachFrame);
-			rs2_release_frame(Rs_Frames);
-			rs2_release_frame(colorized_frame);
+				rs2_release_frame(colorized_frame);
+				rs2_release_frame(First_Frame);
+				rs2_release_frame(Rs_Frames);
+			}
+
+			else
+			{
+				Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
+				FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+
+				rs2_release_frame(First_Frame);
+				rs2_release_frame(Rs_Frames);
+			}
 
 			AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, In_T2D, FrameBuffer, Buffer_Size]()
 				{
 					FTexture2DMipMap& Rs_Texture_Mip = In_T2D->GetPlatformData()->Mips[0];
 					void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
-					
+
 					FMemory::Memcpy(Rs_Texture_Data, FrameBuffer, Buffer_Size);
-					
+
 					Rs_Texture_Mip.BulkData.Unlock();
 					In_T2D->UpdateResource();
 
@@ -261,15 +301,12 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 	AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device, Origin, Timeout]()
 		{
 			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
-			rs2_frame* EachFrame = rs2_extract_frame(Rs_Frames, 0, NULL);
-			
-			if (rs2_is_frame_extendable_to(EachFrame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
-			{
-				int32 Width = rs2_get_frame_width(EachFrame, NULL);
-				int32 Height = rs2_get_frame_height(EachFrame, NULL);
-				float Distance = rs2_depth_frame_get_distance(EachFrame, Origin.X, Origin.Y, NULL);
+			rs2_frame* Depth_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-				rs2_release_frame(EachFrame);
+			if (rs2_is_frame_extendable_to(Depth_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
+			{
+				float Distance = rs2_depth_frame_get_distance(Depth_Frame, Origin.X, Origin.Y, NULL);
+				rs2_release_frame(Depth_Frame);
 				rs2_release_frame(Rs_Frames);
 
 				AsyncTask(ENamedThreads::GameThread, [DelegateDistance, Distance]()
@@ -281,7 +318,7 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 
 			else
 			{
-				rs2_release_frame(EachFrame);
+				rs2_release_frame(Depth_Frame);
 				rs2_release_frame(Rs_Frames);
 
 				AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device]()

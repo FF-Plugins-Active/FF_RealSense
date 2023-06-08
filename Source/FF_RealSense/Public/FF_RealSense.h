@@ -13,7 +13,10 @@ public:
 	virtual void ShutdownModule() override;
 
 #ifdef _WIN64
-	void* RealSenseHandle;
+	
+	void* Handle_realsense2;
+	void* Handle_Intel_Realsense;
+
 #endif
 
 };
