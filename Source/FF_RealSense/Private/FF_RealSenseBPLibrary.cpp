@@ -3,6 +3,11 @@
 #include "FF_RealSenseBPLibrary.h"
 #include "FF_RealSense.h"
 
+#include "ImageUtils.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/KismetRenderingLibrary.h"
+#include "DynamicRHI.h"
+
 #ifdef __ANDROID__
 THIRD_PARTY_INCLUDES_START
 #include <jni.h>
@@ -134,39 +139,7 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 		break;
 	}
 
-	FVector2D Size;
-	switch (In_Size)
-	{
-	case ERsResolutions::Reso_1280_800:
-
-		if (StreamType == ERsStreamType::Infrared || StreamType == ERsStreamType::Depth)
-		{
-			Size = FVector2D(1280, 720);
-		}
-
-		else
-		{
-			Size = FVector2D(1280, 800);
-		}
-
-		break;
-
-	case ERsResolutions::Reso_1280_720:
-		Size = FVector2D(1280, 720);
-		break;
-
-	case ERsResolutions::Reso_640_480:
-		Size = FVector2D(640, 480);
-		break;
-
-	case ERsResolutions::Reso_640_360:
-		Size = FVector2D(640, 360);
-		break;
-
-	default:
-		Size = FVector2D(1280, 800);
-		break;
-	}
+	FVector2D Size = FVector2D(1280, 720);
 
 	rs2_config* Rs_Config = rs2_create_config(NULL);
 	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, Size.X, Size.Y, RsFormat, FPS, NULL);
@@ -174,14 +147,9 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 	rs2_pipeline* Rs_Pipeline = rs2_create_pipeline(In_Device->Rs_Context, NULL);
 	rs2_pipeline_profile* Rs_Pipeline_Profile = rs2_pipeline_start_with_config(Rs_Pipeline, Rs_Config, NULL);
 
-	In_Device->Rs_Pipeline = Rs_Pipeline;
+	In_Device->Map_Pipelines.Add(StreamType, Rs_Pipeline);
+	In_Device->Map_Configs.Add(StreamType, Rs_Config);
 	In_Device->Frame_Resolution = Size;
-	In_Device->Rs_Config = Rs_Config;
-
-	if (StreamType == ERsStreamType::Depth)
-	{
-		In_Device->bIsDepth = true;
-	}
 
 	return true;
 }
@@ -193,10 +161,19 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*
 		return false;
 	}
 
-	rs2_error* Rs_Error = 0;
-	rs2_pipeline_stop(In_Device->Rs_Pipeline, &Rs_Error);
+	TArray<rs2_config*> Array_Configs;
+	In_Device->Map_Configs.GenerateValueArray(Array_Configs);
+
+	TArray<rs2_pipeline*> Array_Pipelines;
+	In_Device->Map_Pipelines.GenerateValueArray(Array_Pipelines);
+
+	for (int32 Index_Pipeline = 0; Index_Pipeline < Array_Pipelines.Num(); Index_Pipeline++)
+	{
+		rs2_pipeline_stop(Array_Pipelines[Index_Pipeline], NULL);
+		rs2_delete_config(Array_Configs[Index_Pipeline]);
+	}
+	
 	rs2_delete_context(In_Device->Rs_Context);
-	rs2_delete_config(In_Device->Rs_Config);
 	rs2_delete_device(In_Device->Rs_Device);
 
 	In_Device = nullptr;
@@ -204,80 +181,98 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*
 	return true;
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb, bool bIsDepth)
+void UFF_RealSenseBPLibrary::Realsense_Create_T2D(UTexture2D*& Color, UTexture2D*& Depth, UTexture2D*& Infrared, FVector2D Size)
 {
-	if (bIsDepth == true)
-	{
-		Out_T2D = UTexture2D::CreateTransient(Size.X, Size.Y, PF_R8G8B8A8);
-	}
+	Color = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+	Color->SRGB = 1;
+	Color->NeverStream = true;
 
-	else
-	{
-		Out_T2D = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-	}
+	Depth = UTexture2D::CreateTransient(Size.X, Size.Y, PF_ShadowDepth);
+	Depth->SRGB = 0;
+	Depth->NeverStream = true;
 
-	Out_T2D->SRGB = bSrgb;
+	Infrared = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+	Infrared->SRGB = 0;
+	Infrared->NeverStream = true;
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& In_T2D, int32 Timeout)
+void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout)
 {
 	if (IsValid(In_Device) == false)
 	{
-		DelegateFrames.Execute(false, "Device object is not valid.");
+		DelegateFrames.Execute(false, nullptr, "Device object is not valid.");
 		return;
 	}
 
-	if (!In_Device->Rs_Pipeline)
+	if (In_Device->Map_Pipelines.Num() == 0)
 	{
-		DelegateFrames.Execute(false, "Capture pipeline is not valid.");
+		DelegateFrames.Execute(false, nullptr, "Capture pipeline is not valid.");
 		return;
 	}
 
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [DelegateFrames, In_Device, In_T2D, Timeout]()
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [DelegateFrames, In_Device, StreamType, Timeout, &Target_Texture]()
 		{
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
+			if (!In_Device->Map_Pipelines.Contains(StreamType))
+			{
+				AsyncTask(ENamedThreads::GameThread, [DelegateFrames]()
+					{
+						DelegateFrames.ExecuteIfBound(false, nullptr, "Stream type not found.");
+					}
+				);
+			}
+
+			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(*In_Device->Map_Pipelines.Find(StreamType), Timeout, NULL);
 			rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 			
-			int64 Buffer_Size = 0;
-			uint8_t* FrameBuffer = nullptr;
-			if (In_Device->bIsDepth)
-			{
-				rs2_processing_block* Colorizer = rs2_create_colorizer(NULL);
-				rs2_frame_queue* frame_queue = rs2_create_frame_queue(1, NULL);
-				rs2_start_processing_queue(Colorizer, frame_queue, NULL);
-				rs2_frame_add_ref(First_Frame, NULL);
-				rs2_process_frame(Colorizer, First_Frame, NULL);
+			int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
+			uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
 
-				rs2_frame* colorized_frame = rs2_wait_for_frame(frame_queue, Timeout, NULL);
+			rs2_release_frame(First_Frame);
+			rs2_release_frame(Rs_Frames);
 
-				Buffer_Size = rs2_get_frame_data_size(colorized_frame, NULL);
-				FrameBuffer = (uint8_t*)(rs2_get_frame_data(colorized_frame, NULL));
-
-				rs2_release_frame(colorized_frame);
-				rs2_release_frame(First_Frame);
-				rs2_release_frame(Rs_Frames);
-			}
-
-			else
-			{
-				Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
-				FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
-
-				rs2_release_frame(First_Frame);
-				rs2_release_frame(Rs_Frames);
-			}
-
-			AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, In_T2D, FrameBuffer, Buffer_Size]()
+			AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, FrameBuffer, Buffer_Size, StreamType, &Target_Texture]()
 				{
-					FTexture2DMipMap& Rs_Texture_Mip = In_T2D->GetPlatformData()->Mips[0];
-					void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
+					if (!Target_Texture)
+					{
+						if (StreamType == ERsStreamType::Depth)
+						{
+							Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
+							Target_Texture->SRGB = false;
+							Target_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+						}
 
-					FMemory::Memcpy(Rs_Texture_Data, FrameBuffer, Buffer_Size);
+						else
+						{
+							Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
+							Target_Texture->SRGB = true;
+						}
 
-					Rs_Texture_Mip.BulkData.Unlock();
-					In_T2D->UpdateResource();
+						Target_Texture->NeverStream = true;
 
-					DelegateFrames.ExecuteIfBound(true, "Frames successfully captured.");
+						FTexture2DMipMap& Rs_Texture_Mip = Target_Texture->GetPlatformData()->Mips[0];
+						void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
+						FMemory::Memcpy(Rs_Texture_Data, FrameBuffer, Buffer_Size);
+
+						Rs_Texture_Mip.BulkData.Unlock();
+						Target_Texture->UpdateResource();
+					}
+
+					else
+					{
+						ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([&Target_Texture, FrameBuffer, Buffer_Size](FRHICommandListImmediate& CommandList)
+							{
+								uint32 DestStride = 0;
+								FRHITexture* TextureRHI = Target_Texture->GetResource()->GetTextureRHI();
+								uint32_t* Buffer = (uint32_t*)RHILockTexture2D(TextureRHI, 0, EResourceLockMode::RLM_WriteOnly, DestStride, false, true);
+								FMemory::Memcpy(Buffer, FrameBuffer, Buffer_Size);
+								RHIUnlockTexture2D(TextureRHI, 0, false, true);
+							}
+						);
+
+						FlushRenderingCommands();
+					}
+
+					DelegateFrames.ExecuteIfBound(true, nullptr, "Frames successfully captured.");
 				}
 			);
 		}
@@ -292,7 +287,7 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 		return;
 	}
 
-	if (!In_Device->Rs_Pipeline)
+	if (In_Device->Map_Pipelines.Num() == 0)
 	{
 		DelegateDistance.Execute(false, 0, "Capture pipeline is not valid.");
 		return;
@@ -300,15 +295,18 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 
 	AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device, Origin, Timeout]()
 		{
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
-			rs2_frame* Depth_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
+			
+			//rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(In_Device->Rs_Pipeline, Timeout, NULL);
+			//rs2_frame* Depth_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-			if (rs2_is_frame_extendable_to(Depth_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
+			if (rs2_is_frame_extendable_to(NULL, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
 			{
+				/*
 				float Distance = rs2_depth_frame_get_distance(Depth_Frame, Origin.X, Origin.Y, NULL);
 				rs2_release_frame(Depth_Frame);
 				rs2_release_frame(Rs_Frames);
-
+				*/
+			float Distance = 0;
 				AsyncTask(ENamedThreads::GameThread, [DelegateDistance, Distance]()
 					{
 						DelegateDistance.ExecuteIfBound(true, Distance, "Frames successfully captured.");
@@ -318,8 +316,8 @@ void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance Delegate
 
 			else
 			{
-				rs2_release_frame(Depth_Frame);
-				rs2_release_frame(Rs_Frames);
+				//rs2_release_frame(Depth_Frame);
+				//rs2_release_frame(Rs_Frames);
 
 				AsyncTask(ENamedThreads::GameThread, [DelegateDistance, In_Device]()
 					{

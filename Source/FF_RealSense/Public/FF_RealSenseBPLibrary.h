@@ -13,9 +13,11 @@ THIRD_PARTY_INCLUDES_END
 UENUM(BlueprintType)
 enum class ERsStreamType : uint8
 {
-	Color		UMETA(DisplayName = "Color"),
-	Infrared	UMETA(DisplayName = "Infrared"),
-	Depth		UMETA(DisplayName = "Depth"),
+	Color			UMETA(DisplayName = "Color"),
+	Infrared		UMETA(DisplayName = "Infrared"),
+	Depth			UMETA(DisplayName = "Depth"),
+	Point_Cloud		UMETA(DisplayName = "Point Cloud"),
+
 };
 ENUM_CLASS_FLAGS(ERsStreamType)
 
@@ -24,8 +26,10 @@ enum class ERsResolutions : uint8
 {
 	Reso_1280_800	UMETA(DisplayName = "1280 x 800"),
 	Reso_1280_720	UMETA(DisplayName = "1280 x 720"),
+	Reso_848_480	UMETA(DisplayName = "848 x 480"),
 	Reso_640_480	UMETA(DisplayName = "640 x 480"),
 	Reso_640_360	UMETA(DisplayName = "640 x 360"),
+
 };
 ENUM_CLASS_FLAGS(ERsResolutions)
 
@@ -53,8 +57,8 @@ public:
 
 	rs2_device* Rs_Device;
 	rs2_context* Rs_Context;
-	rs2_config* Rs_Config;
-	rs2_pipeline* Rs_Pipeline;
+	TMap<ERsStreamType, rs2_config*> Map_Configs;
+	TMap<ERsStreamType, rs2_pipeline*> Map_Pipelines;
 
 	UPROPERTY(BlueprintReadOnly)
 	FVector2D Frame_Resolution;
@@ -83,7 +87,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FRsDelegateFrames, bool, bIsSuccessfull, FString, Out_Code);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateFrames, bool, bIsSuccessfull, UTexture2D*, Texture, FString, Out_Code);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateDistance, bool, bIsSuccessfull, float, Out_Distance, FString, Out_Code);
@@ -118,10 +122,10 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	static bool Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*& In_Device);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Create Texture2D", Keywords = "intel, realsense, get, frames, create, texture, 2d, t2d"), Category = "FF_Realsense")
-	static void Realsense_Create_T2D(UTexture2D*& Out_T2D, FVector2D Size, bool bSrgb, bool bIsDepth);
+	static void Realsense_Create_T2D(UTexture2D*& Color, UTexture2D*& Depth, UTexture2D*& Infrared, FVector2D Size);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Stream", Keywords = "intel, realsense, get, frames"), Category = "FF_Realsense")
-	static void Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& In_T2D, int32 Timeout = 1);
+	static void Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout = 1);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Distance", Keywords = "intel, realsense, get, distance"), Category = "FF_Realsense")
 	static void Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout = 1);
