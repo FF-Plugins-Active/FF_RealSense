@@ -8,6 +8,11 @@
 #include "Kismet/KismetRenderingLibrary.h"
 #include "DynamicRHI.h"
 
+#include "RHICommandList.h"
+#include "RenderingThread.h"
+#include "ScreenRendering.h"
+#include "CommonRenderResources.h"
+
 #ifdef __ANDROID__
 THIRD_PARTY_INCLUDES_START
 #include <jni.h>
@@ -111,7 +116,7 @@ bool UFF_RealSenseBPLibrary::Realsense_Get_Each_Device(URsDeviceObject*& Out_Dev
 	return true;
 }
 
-bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, ERsStreamType StreamType, ERsResolutions In_Size, int32 StreamIndex, int32 FPS)
+bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, ERsStreamType StreamType, int32 StreamIndex, int32 FPS)
 {
 	if (IsValid(In_Device) == false)
 	{
@@ -120,26 +125,28 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*
 
 	rs2_stream RsStreamType = RS2_STREAM_COLOR;
 	rs2_format RsFormat = RS2_FORMAT_BGRA8;
+	FVector2D Size;
 
 	switch (StreamType)
 	{
 	case ERsStreamType::Color:
 		RsStreamType = RS2_STREAM_COLOR;
 		RsFormat = RS2_FORMAT_BGRA8;
+		Size = FVector2D(1280, 800);
 		break;
 
 	case ERsStreamType::Infrared:
 		RsStreamType = RS2_STREAM_INFRARED;
 		RsFormat = RS2_FORMAT_BGRA8;
+		Size = FVector2D(1280, 720);
 		break;
 
 	case ERsStreamType::Depth:
 		RsStreamType = RS2_STREAM_DEPTH;
 		RsFormat = RS2_FORMAT_Z16;
+		Size = FVector2D(1280, 720);
 		break;
 	}
-
-	FVector2D Size = FVector2D(1280, 720);
 
 	rs2_config* Rs_Config = rs2_create_config(NULL);
 	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, Size.X, Size.Y, RsFormat, FPS, NULL);
@@ -181,102 +188,88 @@ bool UFF_RealSenseBPLibrary::Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*
 	return true;
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Create_T2D(UTexture2D*& Color, UTexture2D*& Depth, UTexture2D*& Infrared, FVector2D Size)
-{
-	Color = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-	Color->SRGB = 1;
-	Color->NeverStream = true;
-
-	Depth = UTexture2D::CreateTransient(Size.X, Size.Y, PF_ShadowDepth);
-	Depth->SRGB = 0;
-	Depth->NeverStream = true;
-
-	Infrared = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-	Infrared->SRGB = 0;
-	Infrared->NeverStream = true;
-}
-
-void UFF_RealSenseBPLibrary::Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout)
+void UFF_RealSenseBPLibrary::Realsense_Get_Stream(UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout)
 {
 	if (IsValid(In_Device) == false)
 	{
-		DelegateFrames.Execute(false, nullptr, "Device object is not valid.");
 		return;
 	}
 
 	if (In_Device->Map_Pipelines.Num() == 0)
 	{
-		DelegateFrames.Execute(false, nullptr, "Capture pipeline is not valid.");
 		return;
 	}
 
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [DelegateFrames, In_Device, StreamType, Timeout, &Target_Texture]()
+	if (!In_Device->Map_Pipelines.Contains(StreamType))
+	{
+		return;
+	}
+
+	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(*In_Device->Map_Pipelines.Find(StreamType), Timeout, NULL);
+	rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
+
+	int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
+	uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+
+	rs2_release_frame(First_Frame);
+	rs2_release_frame(Rs_Frames);
+
+	if (!Target_Texture)
+	{
+		switch (StreamType)
 		{
-			if (!In_Device->Map_Pipelines.Contains(StreamType))
-			{
-				AsyncTask(ENamedThreads::GameThread, [DelegateFrames]()
-					{
-						DelegateFrames.ExecuteIfBound(false, nullptr, "Stream type not found.");
-					}
-				);
-			}
+		case ERsStreamType::Color:
+			Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			Target_Texture->SRGB = false;
+			Target_Texture->NeverStream = true;
+			break;
 
-			rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(*In_Device->Map_Pipelines.Find(StreamType), Timeout, NULL);
-			rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
-			
-			int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
-			uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+		case ERsStreamType::Infrared:
+			Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
+			Target_Texture->SRGB = true;
+			Target_Texture->NeverStream = true;
+			break;
 
-			rs2_release_frame(First_Frame);
-			rs2_release_frame(Rs_Frames);
+		case ERsStreamType::Depth:
+			Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
+			Target_Texture->SRGB = false;
+			Target_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+			Target_Texture->NeverStream = true;
+			break;
 
-			AsyncTask(ENamedThreads::GameThread, [DelegateFrames, In_Device, FrameBuffer, Buffer_Size, StreamType, &Target_Texture]()
-				{
-					if (!Target_Texture)
-					{
-						if (StreamType == ERsStreamType::Depth)
-						{
-							Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
-							Target_Texture->SRGB = false;
-							Target_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
-						}
+		case ERsStreamType::Point_Cloud:
+			return;
 
-						else
-						{
-							Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
-							Target_Texture->SRGB = true;
-						}
-
-						Target_Texture->NeverStream = true;
-
-						FTexture2DMipMap& Rs_Texture_Mip = Target_Texture->GetPlatformData()->Mips[0];
-						void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
-						FMemory::Memcpy(Rs_Texture_Data, FrameBuffer, Buffer_Size);
-
-						Rs_Texture_Mip.BulkData.Unlock();
-						Target_Texture->UpdateResource();
-					}
-
-					else
-					{
-						ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([&Target_Texture, FrameBuffer, Buffer_Size](FRHICommandListImmediate& CommandList)
-							{
-								uint32 DestStride = 0;
-								FRHITexture* TextureRHI = Target_Texture->GetResource()->GetTextureRHI();
-								uint32_t* Buffer = (uint32_t*)RHILockTexture2D(TextureRHI, 0, EResourceLockMode::RLM_WriteOnly, DestStride, false, true);
-								FMemory::Memcpy(Buffer, FrameBuffer, Buffer_Size);
-								RHIUnlockTexture2D(TextureRHI, 0, false, true);
-							}
-						);
-
-						FlushRenderingCommands();
-					}
-
-					DelegateFrames.ExecuteIfBound(true, nullptr, "Frames successfully captured.");
-				}
-			);
+		default:
+			Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			Target_Texture->SRGB = true;
+			Target_Texture->NeverStream = true;
+			break;
 		}
-	);
+
+		FTexture2DMipMap& Rs_Texture_Mip = Target_Texture->GetPlatformData()->Mips[0];
+		void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
+		FMemory::Memcpy(Rs_Texture_Data, FrameBuffer, Buffer_Size);
+
+		Rs_Texture_Mip.BulkData.Unlock();
+		Target_Texture->UpdateResource();
+	}
+
+	else
+	{
+		// Stride Function.
+		int32 BytesPerPixel = 4;
+		int32 Width_Bytes = Target_Texture->GetSizeX() * BytesPerPixel;
+
+		TFunction<void(uint8* SrcData, const FUpdateTextureRegion2D* Regions)> DataCleanupFunc = [](uint8* SrcData, const FUpdateTextureRegion2D* Regions)
+			{
+				delete[] SrcData;
+				delete[] Regions;
+			};
+
+		FUpdateTextureRegion2D* Region = new FUpdateTextureRegion2D(0, 0, 0, 0, 1280, 800);
+		Target_Texture->UpdateTextureRegions(0, 1, Region, Width_Bytes, BytesPerPixel, FrameBuffer, DataCleanupFunc);
+	}
 }
 
 void UFF_RealSenseBPLibrary::Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout)

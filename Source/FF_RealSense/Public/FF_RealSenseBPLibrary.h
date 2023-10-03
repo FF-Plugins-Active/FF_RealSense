@@ -4,34 +4,14 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 
+// Custom Include
+#include "Rs_Enums.h"
+
 THIRD_PARTY_INCLUDES_START
 #include <librealsense2/rs.hpp>
 THIRD_PARTY_INCLUDES_END
 
 #include "FF_RealSenseBPLibrary.generated.h"
-
-UENUM(BlueprintType)
-enum class ERsStreamType : uint8
-{
-	Color			UMETA(DisplayName = "Color"),
-	Infrared		UMETA(DisplayName = "Infrared"),
-	Depth			UMETA(DisplayName = "Depth"),
-	Point_Cloud		UMETA(DisplayName = "Point Cloud"),
-
-};
-ENUM_CLASS_FLAGS(ERsStreamType)
-
-UENUM(BlueprintType)
-enum class ERsResolutions : uint8
-{
-	Reso_1280_800	UMETA(DisplayName = "1280 x 800"),
-	Reso_1280_720	UMETA(DisplayName = "1280 x 720"),
-	Reso_848_480	UMETA(DisplayName = "848 x 480"),
-	Reso_640_480	UMETA(DisplayName = "640 x 480"),
-	Reso_640_360	UMETA(DisplayName = "640 x 360"),
-
-};
-ENUM_CLASS_FLAGS(ERsResolutions)
 
 UCLASS(BlueprintType)
 class FF_REALSENSE_API URsDeviceList : public UObject
@@ -116,16 +96,13 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	* @param In_Size 1280x800 only works with "Color" stream type. If you select other streams, 1280x800 converts itself to 1280x720.
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Pipeline Init", Keywords = "intel, realsense, pipeline, init, color, infrared, depth"), Category = "FF_Realsense")
-	static bool Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, ERsStreamType StreamType, ERsResolutions In_Size, int32 StreamIndex = 0, int32 FPS = 30);
+	static bool Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, ERsStreamType StreamType, int32 StreamIndex = 0, int32 FPS = 30);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Stop Pipeline", Keywords = "intel, realsense, pipeline, stop"), Category = "FF_Realsense")
 	static bool Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*& In_Device);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Create Texture2D", Keywords = "intel, realsense, get, frames, create, texture, 2d, t2d"), Category = "FF_Realsense")
-	static void Realsense_Create_T2D(UTexture2D*& Color, UTexture2D*& Depth, UTexture2D*& Infrared, FVector2D Size);
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Stream", Keywords = "intel, realsense, get, frames"), Category = "FF_Realsense")
-	static void Realsense_Get_Stream(FRsDelegateFrames DelegateFrames, UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout = 1);
+	static void Realsense_Get_Stream(UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout = 1);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Distance", Keywords = "intel, realsense, get, distance"), Category = "FF_Realsense")
 	static void Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout = 1);
