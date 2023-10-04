@@ -88,6 +88,9 @@ public:
 	int32 InFPS = 30;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	bool bUseSrgb = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	FVector2D Distance_Origin;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

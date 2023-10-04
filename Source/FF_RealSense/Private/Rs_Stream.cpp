@@ -207,14 +207,14 @@ void ARs_Stream::Rs_Get_Stream()
 		case ERsStreamType::Color:
 
 			this->Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = false;
+			this->Target_Texture->SRGB = bUseSrgb;
 			this->Target_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Infrared:
 
 			this->Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = true;
+			this->Target_Texture->SRGB = bUseSrgb;
 			this->Target_Texture->NeverStream = true;
 			break;
 
@@ -232,7 +232,7 @@ void ARs_Stream::Rs_Get_Stream()
 
 		default:
 			this->Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = true;
+			this->Target_Texture->SRGB = bUseSrgb;
 			this->Target_Texture->NeverStream = true;
 			break;
 		}
@@ -261,9 +261,9 @@ void ARs_Stream::Rs_Get_Stream()
 			}
 		);
 
-		this->OnFrameCaptured();
-
 		FlushRenderingCommands();
+
+		this->OnFrameCaptured();
 
 		return;
 	}
