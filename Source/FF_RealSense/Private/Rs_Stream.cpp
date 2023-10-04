@@ -185,8 +185,7 @@ void ARs_Stream::Rs_Get_Stream()
 		return;
 	}
 
-	const size_t BufferSize = (size_t)(1280 * 800 * 4);
-	uint8* CurrentFrame = (uint8*)malloc(BufferSize);
+	FRealSenseTextureBuffer CurrentFrame;
 
 	if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
 	{
@@ -194,7 +193,7 @@ void ARs_Stream::Rs_Get_Stream()
 		return;
 	}
 
-	if (!CurrentFrame)
+	if (!CurrentFrame.Buffer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RealSense - Current frame buffer is not valid."));
 		return;
@@ -240,7 +239,7 @@ void ARs_Stream::Rs_Get_Stream()
 
 		FTexture2DMipMap& Rs_Texture_Mip = Target_Texture->GetPlatformData()->Mips[0];
 		void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
-		FMemory::Memcpy(Rs_Texture_Data, CurrentFrame, BufferSize);
+		FMemory::Memcpy(Rs_Texture_Data, CurrentFrame.Buffer, CurrentFrame.BufferSize);
 
 		Rs_Texture_Mip.BulkData.Unlock();
 		Target_Texture->UpdateResource();
@@ -252,12 +251,12 @@ void ARs_Stream::Rs_Get_Stream()
 
 	else
 	{
-		ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([this, CurrentFrame, BufferSize](FRHICommandListImmediate& CommandList)
+		ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([this, CurrentFrame](FRHICommandListImmediate& CommandList)
 			{
 				uint32 DestStride = 0;
 				FRHITexture* TextureRHI = this->Target_Texture->GetResource()->GetTextureRHI();
 				uint32_t* Buffer = (uint32_t*)RHILockTexture2D(TextureRHI, 0, EResourceLockMode::RLM_WriteOnly, DestStride, false, true);
-				FMemory::Memcpy(Buffer, CurrentFrame, BufferSize);
+				FMemory::Memcpy(Buffer, CurrentFrame.Buffer, CurrentFrame.BufferSize);
 				RHIUnlockTexture2D(TextureRHI, 0, false, true);
 			}
 		);

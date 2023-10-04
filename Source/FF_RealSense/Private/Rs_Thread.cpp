@@ -86,13 +86,15 @@ void FRs_Thread::Callback_Stream()
 
 	if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared)
 	{
-		int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
+		int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
 
-		if (Buffer_Size > 0)
+		if (BufferSize > 0)
 		{
-			uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+			FRealSenseTextureBuffer CurrentFrame;
+			CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+			CurrentFrame.BufferSize = BufferSize;
 
-			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(FrameBuffer))
+			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
 			}

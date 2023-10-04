@@ -15,6 +15,19 @@
 
 #include "Rs_Stream.generated.h"
 
+USTRUCT()
+struct FF_REALSENSE_API FRealSenseTextureBuffer
+{
+	GENERATED_BODY()
+
+public:
+
+	uint8* Buffer;
+
+	int64 BufferSize = 0;
+
+};
+
 UCLASS()
 class FF_REALSENSE_API ARs_Stream : public AActor
 {
@@ -40,7 +53,7 @@ public:
 	FTimerHandle Timer_Capture;
 
 	// Queues.
-	TCircularQueue<uint8*> Rs_Circ_Queue_Frame = TCircularQueue<uint8*>(35);
+	TCircularQueue<FRealSenseTextureBuffer> Rs_Circ_Queue_Frame = TCircularQueue<FRealSenseTextureBuffer>(35);
 	TCircularQueue<float> Rs_Circ_Queue_Distance = TCircularQueue<float>(35);
 
 	// Thread Related Variables.
@@ -89,7 +102,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Stop Thread", Keywords = "intel, realsense, thread, stop"), Category = "FF_RealSense")
 	virtual void Rs_Thread_Stop();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "intel, realsense, thread, get, stream"), Category = "FF_RealSense")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Toggle Thread", Keywords = "intel, realsense, thread, stream, toggle, pause, continue"), Category = "FF_RealSense")
 	virtual void Rs_Thread_Toggle(bool bIsPaused);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "intel, realsense, thread, get, stream"), Category = "FF_RealSense")
