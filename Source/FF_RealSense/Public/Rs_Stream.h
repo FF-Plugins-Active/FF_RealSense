@@ -36,17 +36,27 @@ public:
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 	
-	// FRunnable Thread Queue.
-	TCircularQueue<uint8*> Rs_Circ_Queue = TCircularQueue<uint8*>(100);
+	// Timer
+	FTimerHandle Timer_Capture;
 
-	// Threads
+	// Queues.
+	TCircularQueue<uint8*> Rs_Circ_Queue_Frame = TCircularQueue<uint8*>(35);
+	TCircularQueue<uint8*> Rs_Circ_Queue_Distance = TCircularQueue<uint8*>(35);
+
+	// Thread Related Variables.
 	class FRs_Thread* Rs_Thread = nullptr;
 	FString ThreadName = "";
 
-	// Realsense Params.
+	// Parameters.
+	float Rate = 0.f;
+	float TimeOut = 0.f;
+	int32 FPS = 30;
 	FVector2D Size;
+
+	// RealSense Related Variables.
 	rs2_stream RsStreamType = RS2_STREAM_COLOR;
 	rs2_format RsFormat = RS2_FORMAT_BGRA8;
+	rs2_config* Rs_Config = nullptr;
 	rs2_pipeline* Rs_Pipeline = nullptr;
 	rs2_pipeline_profile* Rs_Pipeline_Profile = nullptr;
 
@@ -62,18 +72,21 @@ public:
 	int32 StreamIndex = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
-	int32 FPS = 30;
+	int32 InFPS = 30;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UTexture2D* Target_Texture = nullptr;
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Close All Windows", Keywords = "close, all, window"), Category = "FF_RealSense")
-	virtual bool Rs_Init_Thread();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Initialize Thread", Keywords = "intel, real, sense, thread, init"), Category = "FF_RealSense")
+	virtual bool Rs_Thread_Init();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "close, all, window"), Category = "FF_RealSense")
-	virtual bool Rs_Get_Stream();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Stop Thread", Keywords = "intel, real, sense, thread, stop"), Category = "FF_RealSense")
+	virtual void Rs_Thread_Stop();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Is Thread Active", Keywords = "close, all, window"), Category = "FF_RealSense")
-	virtual bool Rs_Is_Thread_Active();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "intel, real, sense, thread, get, stream"), Category = "FF_RealSense")
+	virtual void Rs_Get_Stream();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "FF_RealSense")
+	void OnFrameCaptured();
 
 };

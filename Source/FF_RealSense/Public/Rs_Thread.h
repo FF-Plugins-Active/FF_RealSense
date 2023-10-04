@@ -16,13 +16,11 @@ class FRs_Thread : public FRunnable
 	
 public:	
 
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	FRs_Thread(ARs_Stream* In_Parent_Actor);
 
-	// Destructor
+	// Destructor.
 	virtual ~FRs_Thread() override;
-
-	bool bStartThread = false;
 
 	virtual bool Init() override;
 
@@ -31,8 +29,23 @@ public:
 	virtual void Stop() override;
 
 private:
+
+	// Functions.
+
+	void Callback_Stream();
+
+	void Callback_Distance();
+
+private:
+	
+	// Variables.
+
+	FRunnableThread* RunnableThread = nullptr;
 	
 	ARs_Stream* Parent_Actor = nullptr;
 
-	FRunnableThread* RunnableThread = nullptr;
+	bool bStartThread = false;
+
+	ERsStreamType StreamType;
+
 };

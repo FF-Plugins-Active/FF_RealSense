@@ -67,9 +67,6 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateFrames, bool, bIsSuccessfull, UTexture2D*, Texture, FString, Out_Code);
-
-UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateDistance, bool, bIsSuccessfull, float, Out_Distance, FString, Out_Code);
 
 UDELEGATE(BlueprintAuthorityOnly)
@@ -92,17 +89,8 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Each Device", Keywords = "intel, realsense, get, each, device"), Category = "FF_Realsense")
 	static bool Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
 
-	/*
-	* @param In_Size 1280x800 only works with "Color" stream type. If you select other streams, 1280x800 converts itself to 1280x720.
-	*/
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Pipeline Init", Keywords = "intel, realsense, pipeline, init, color, infrared, depth"), Category = "FF_Realsense")
-	static bool Realsense_Pipeline_Init(UPARAM(ref)URsDeviceObject*& In_Device, ERsStreamType StreamType, int32 StreamIndex = 0, int32 FPS = 30);
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Stop Pipeline", Keywords = "intel, realsense, pipeline, stop"), Category = "FF_Realsense")
 	static bool Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*& In_Device);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Stream", Keywords = "intel, realsense, get, frames"), Category = "FF_Realsense")
-	static void Realsense_Get_Stream(UPARAM(ref)URsDeviceObject*& In_Device, UPARAM(ref)UTexture2D*& Target_Texture, ERsStreamType StreamType, int32 Timeout = 1);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Distance", Keywords = "intel, realsense, get, distance"), Category = "FF_Realsense")
 	static void Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout = 1);
