@@ -32,9 +32,28 @@ void ARs_Stream::Tick(float DeltaTime)
 
 void ARs_Stream::Rs_Get_Stream()
 {	
+	if (StreamType == ERsStreamType::Distance)
+	{
+		if (Rs_Circ_Queue_Distance.IsEmpty())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no RealSense distance value to process."));
+			return;
+		}
+
+		if (!Rs_Circ_Queue_Distance.Dequeue(Out_Distance))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense distance."));
+			return;
+		}
+
+		this->OnFrameCaptured();
+
+		return;
+	}
+
 	if (Rs_Circ_Queue_Frame.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no frame RealSense frame to process."));
+		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no RealSense frame to process."));
 		return;
 	}
 
@@ -43,7 +62,7 @@ void ARs_Stream::Rs_Get_Stream()
 
 	if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense."));
+		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense frame."));
 		return;
 	}
 
@@ -173,7 +192,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::Distance:
 
 		Size = FVector2D(1280, 720);
-		ThreadName = "RealSense Stream Thread for Depth";
+		ThreadName = "RealSense Stream Thread for Distance";
 		RsStreamType = RS2_STREAM_DEPTH;
 		RsFormat = RS2_FORMAT_Z16;
 		break;
@@ -221,4 +240,6 @@ void ARs_Stream::Rs_Thread_Stop()
 
 	rs2_pipeline_stop(Rs_Pipeline, NULL);
 	rs2_delete_config(Rs_Config);
+
+	UE_LOG(LogTemp, Display, TEXT("RealSense - RsThread stoped."));
 }

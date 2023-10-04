@@ -5,10 +5,8 @@
 // Custom Includes.
 #include "Rs_Stream.h"
 
-#include "GenericPlatform/GenericPlatformProcess.h"
-
 THIRD_PARTY_INCLUDES_START
-#include <librealsense2/rs.hpp>
+//#include <librealsense2/rs.hpp>
 //#include <chrono>
 THIRD_PARTY_INCLUDES_END
 
@@ -65,15 +63,7 @@ uint32 FRs_Thread::Run()
 
 	while (bStartThread)
 	{
-		if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared)
-		{
-			this->Callback_Stream();
-		}
-
-		if (StreamType == ERsStreamType::Distance)
-		{
-			this->Callback_Stream();
-		}
+		this->Callback_Stream();
 		
 		FPlatformProcess::Sleep(Parent_Actor->Rate);
 	}
@@ -86,25 +76,34 @@ void FRs_Thread::Callback_Stream()
 	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(Parent_Actor->Rs_Pipeline, Parent_Actor->TimeOut, NULL);
 	rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-	int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
-
-	if (Buffer_Size != 0)
+	if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared)
 	{
-		uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+		int64 Buffer_Size = rs2_get_frame_data_size(First_Frame, NULL);
 
-		if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(FrameBuffer))
+		if (Buffer_Size > 0)
 		{
-			// Give one frame to game thread to dequeue.
-			UE_LOG(LogTemp, Warning, TEXT("RealSense Queue overloaded."));
-			FPlatformProcess::Sleep(Parent_Actor->Rate);
+			uint8_t* FrameBuffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+
+			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(FrameBuffer))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
+			}
 		}
-
-		rs2_release_frame(First_Frame);
-		rs2_release_frame(Rs_Frames);
 	}
-}
 
-void FRs_Thread::Callback_Distance()
-{
+	if (StreamType == ERsStreamType::Distance)
+	{
+		if (rs2_is_frame_extendable_to(First_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
+		{
+			float Distance = rs2_depth_frame_get_distance(First_Frame, Parent_Actor->Distance_Origin.X, Parent_Actor->Distance_Origin.Y, NULL);
 
+			if (!Parent_Actor->Rs_Circ_Queue_Distance.Enqueue(Distance))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense distance queue overloaded."));
+			}
+		}
+	}
+
+	rs2_release_frame(First_Frame);
+	rs2_release_frame(Rs_Frames);
 }

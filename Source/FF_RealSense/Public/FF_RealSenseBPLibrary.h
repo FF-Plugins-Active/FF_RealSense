@@ -37,8 +37,6 @@ public:
 
 	rs2_device* Rs_Device;
 	rs2_context* Rs_Context;
-	TMap<ERsStreamType, rs2_config*> Map_Configs;
-	TMap<ERsStreamType, rs2_pipeline*> Map_Pipelines;
 
 	UPROPERTY(BlueprintReadOnly)
 	FVector2D Frame_Resolution;
@@ -67,9 +65,6 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateDistance, bool, bIsSuccessfull, float, Out_Distance, FString, Out_Code);
-
-UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateRotation, bool, bIsSuccessfull, FRotator, Out_Distance, FString, Out_Code);
 
 UCLASS()
@@ -77,22 +72,19 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Init Android", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Init Android", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
 	static void Realsense_Init_Android();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
 	static bool Realsense_Device_List_Get(URsDeviceList*& Out_Device_List);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "FF_Realsense")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "FF_Realsense")
 	static bool Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Each Device", Keywords = "intel, realsense, get, each, device"), Category = "FF_Realsense")
-	static bool Realsense_Get_Each_Device(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device", Keywords = "intel, realsense, device, get"), Category = "FF_Realsense")
+	static bool Realsense_Device_Get(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Stop Pipeline", Keywords = "intel, realsense, pipeline, stop"), Category = "FF_Realsense")
-	static bool Realsense_Pipeline_Stop(UPARAM(ref)URsDeviceObject*& In_Device);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense Get Distance", Keywords = "intel, realsense, get, distance"), Category = "FF_Realsense")
-	static void Realsense_Get_Distance(FRsDelegateDistance DelegateDistance, UPARAM(ref)URsDeviceObject*& In_Device, FVector2D Origin, int32 Timeout = 1);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
+	static bool Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device);
 
 };

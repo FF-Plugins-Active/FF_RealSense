@@ -34,8 +34,6 @@ private:
 
 	void Callback_Stream();
 
-	void Callback_Distance();
-
 private:
 	
 	// Variables.
