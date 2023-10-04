@@ -90,6 +90,9 @@ public:
 	virtual void Rs_Thread_Stop();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "intel, realsense, thread, get, stream"), Category = "FF_RealSense")
+	virtual void Rs_Thread_Toggle(bool bIsPaused);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Get Stream", Keywords = "intel, realsense, thread, get, stream"), Category = "FF_RealSense")
 	virtual void Rs_Get_Stream();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "FF_RealSense")

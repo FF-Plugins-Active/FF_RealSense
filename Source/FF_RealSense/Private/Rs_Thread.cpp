@@ -71,6 +71,14 @@ uint32 FRs_Thread::Run()
 	return 0;
 }
 
+void FRs_Thread::Toggle(bool bIsPaused)
+{
+	if (RunnableThread)
+	{
+		RunnableThread->Suspend(bIsPaused);
+	}
+}
+
 void FRs_Thread::Callback_Stream()
 {
 	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(Parent_Actor->Rs_Pipeline, Parent_Actor->TimeOut, NULL);

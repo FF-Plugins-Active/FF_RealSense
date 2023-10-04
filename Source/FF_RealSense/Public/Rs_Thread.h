@@ -28,6 +28,8 @@ public:
 
 	virtual void Stop() override;
 
+	virtual void Toggle(bool bIsPaused);
+
 private:
 
 	// Functions.
