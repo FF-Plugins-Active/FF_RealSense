@@ -15,6 +15,21 @@
 
 #include "Rs_Stream.generated.h"
 
+USTRUCT(BlueprintType)
+struct FF_REALSENSE_API FRealSenseQr
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadOnly)
+	FText QR_Text;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FVector2D> QR_Points;
+
+};
+
 USTRUCT()
 struct FF_REALSENSE_API FRealSenseTextureBuffer
 {
@@ -22,9 +37,16 @@ struct FF_REALSENSE_API FRealSenseTextureBuffer
 
 public:
 
-	uint8* Buffer;
+	uint8* Buffer = NULL;
 
+	UPROPERTY()
 	int64 BufferSize = 0;
+
+	UPROPERTY()
+	float Distance = 0;
+
+	UPROPERTY()
+	TArray<FRealSenseQr> QR_Params;
 
 };
 
@@ -54,7 +76,6 @@ public:
 
 	// Queues.
 	TCircularQueue<FRealSenseTextureBuffer> Rs_Circ_Queue_Frame = TCircularQueue<FRealSenseTextureBuffer>(35);
-	TCircularQueue<float> Rs_Circ_Queue_Distance = TCircularQueue<float>(35);
 
 	// Thread Related Variables.
 	class FRs_Thread* Rs_Thread = nullptr;
@@ -88,13 +109,19 @@ public:
 	int32 InFPS = 30;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	FVector2D Distance_Origin;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	bool bUseSrgb = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
-	FVector2D Distance_Origin;
+	bool bEnableQr = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UTexture2D* Target_Texture = nullptr;
+	UTexture2D* Out_Texture = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FRealSenseQr> Out_QR;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float Out_Distance = 0.f;

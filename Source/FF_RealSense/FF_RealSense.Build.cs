@@ -18,10 +18,10 @@ public class FF_RealSense : ModuleRules
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.lib"));
             
 			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.dll"));
-            RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "Intel.Realsense.dll"));
+            //RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "Intel.Realsense.dll"));
             
 			PublicDelayLoadDLLs.Add("realsense2.dll");
-            PublicDelayLoadDLLs.Add("Intel.Realsense.dll");
+            //PublicDelayLoadDLLs.Add("Intel.Realsense.dll");
         }
 
         if (UnrealTargetPlatform.Android == Target.Platform)
@@ -52,10 +52,10 @@ public class FF_RealSense : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Projects",
-                "MediaAssets",		// UMediaTexture : Base
-				"RHI",				// UMediaTexture : FRHICommandListImmediate
-				"RenderCore",		// UMediaTexture : GetImmediateCommandList_ForRenderCommand()
-				"UMG",
+				"RHI",				// Rs_Stream -> Update Texture
+				"RenderCore",		// Rs_Stream -> Update Texture
+				"ZXing",
+                "ZXingForUE4",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

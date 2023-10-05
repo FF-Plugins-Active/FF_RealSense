@@ -3,7 +3,7 @@
 #include "Rs_Stream.h"
 
 // Sets default values
-ARs_Stream::ARs_Stream() : Rs_Circ_Queue_Frame(35), Rs_Circ_Queue_Distance(35)
+ARs_Stream::ARs_Stream() : Rs_Circ_Queue_Frame(35)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -162,17 +162,20 @@ void ARs_Stream::Rs_Get_Stream()
 {
 	if (StreamType == ERsStreamType::Distance)
 	{
-		if (Rs_Circ_Queue_Distance.IsEmpty())
+		if (Rs_Circ_Queue_Frame.IsEmpty())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no RealSense distance value to process."));
 			return;
 		}
 
-		if (!Rs_Circ_Queue_Distance.Dequeue(Out_Distance))
+		FRealSenseTextureBuffer CurrentFrame;
+		if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense distance."));
 			return;
 		}
+
+		Out_Distance = CurrentFrame.Distance;
 
 		this->OnFrameCaptured();
 
@@ -199,31 +202,36 @@ void ARs_Stream::Rs_Get_Stream()
 		return;
 	}
 
-	if (!IsValid(Target_Texture))
+	if (bEnableQr && StreamType == ERsStreamType::Color)
+	{
+		Out_QR = CurrentFrame.QR_Params;
+	}
+
+	if (!IsValid(Out_Texture))
 	{
 		switch (StreamType)
 		{
 
 		case ERsStreamType::Color:
 
-			this->Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = bUseSrgb;
-			this->Target_Texture->NeverStream = true;
+			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture->SRGB = bUseSrgb;
+			this->Out_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Infrared:
 
-			this->Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = bUseSrgb;
-			this->Target_Texture->NeverStream = true;
+			this->Out_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
+			this->Out_Texture->SRGB = bUseSrgb;
+			this->Out_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Depth:
 
-			this->Target_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
-			this->Target_Texture->SRGB = false;
-			this->Target_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
-			this->Target_Texture->NeverStream = true;
+			this->Out_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
+			this->Out_Texture->SRGB = false;
+			this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+			this->Out_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Point_Cloud:
@@ -231,18 +239,18 @@ void ARs_Stream::Rs_Get_Stream()
 			return;
 
 		default:
-			this->Target_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
-			this->Target_Texture->SRGB = bUseSrgb;
-			this->Target_Texture->NeverStream = true;
+			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture->SRGB = bUseSrgb;
+			this->Out_Texture->NeverStream = true;
 			break;
 		}
 
-		FTexture2DMipMap& Rs_Texture_Mip = Target_Texture->GetPlatformData()->Mips[0];
+		FTexture2DMipMap& Rs_Texture_Mip = Out_Texture->GetPlatformData()->Mips[0];
 		void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
 		FMemory::Memcpy(Rs_Texture_Data, CurrentFrame.Buffer, CurrentFrame.BufferSize);
 
 		Rs_Texture_Mip.BulkData.Unlock();
-		Target_Texture->UpdateResource();
+		Out_Texture->UpdateResource();
 
 		this->OnFrameCaptured();
 
@@ -254,7 +262,7 @@ void ARs_Stream::Rs_Get_Stream()
 		ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([this, CurrentFrame](FRHICommandListImmediate& CommandList)
 			{
 				uint32 DestStride = 0;
-				FRHITexture* TextureRHI = this->Target_Texture->GetResource()->GetTextureRHI();
+				FRHITexture* TextureRHI = this->Out_Texture->GetResource()->GetTextureRHI();
 				uint32_t* Buffer = (uint32_t*)RHILockTexture2D(TextureRHI, 0, EResourceLockMode::RLM_WriteOnly, DestStride, false, true);
 				FMemory::Memcpy(Buffer, CurrentFrame.Buffer, CurrentFrame.BufferSize);
 				RHIUnlockTexture2D(TextureRHI, 0, false, true);

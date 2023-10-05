@@ -120,3 +120,86 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*
 
 	return true;
 }
+
+/*
+void UFF_RealSenseBPLibrary::RealSense_Point_Cloud(FString In_Path)
+{
+	AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [In_Path]()
+		{
+			rs2::context Rs_Context;
+			rs2::device_list Rs_Device_List = Rs_Context.query_devices();
+			rs2::device Rs_Device = Rs_Device_List[0];
+			const char* DeviceInfo = Rs_Device.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER);
+
+			// I can see attached D455's serial number and it is correct.
+			UE_LOG(LogTemp, Warning, TEXT("RealSense - Attached camera serial = %s"), *FString(DeviceInfo));
+
+			rs2::config Rs_Config;
+			Rs_Config.enable_device(DeviceInfo);
+
+			rs2::pipeline Rs_Pipeline(Rs_Context);
+			Rs_Pipeline.start(Rs_Config);
+			
+			rs2::frameset Frameset;
+			Rs_Pipeline.wait_for_frames(30);
+
+			// I tried this, too but wait result comes false.
+			const std::chrono::steady_clock::duration StartTime = std::chrono::high_resolution_clock::now().time_since_epoch();
+			while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch() - StartTime).count() < 30)
+			{
+				bool WaitResult = Rs_Pipeline.try_wait_for_frames(&Frameset, 30);
+				UE_LOG(LogTemp, Warning, TEXT("RealSense - Wait Result = %s"), WaitResult ? *FString("true") : *FString("false"));
+			}
+
+			// Frameset is NULL
+			if (!Frameset)
+			{
+				AsyncTask(ENamedThreads::GameThread, []()
+					{
+						UE_LOG(LogTemp, Warning, TEXT("RealSense - Frameset is not valid !"));
+					}
+				);
+
+				return;
+			}
+
+			rs2::depth_frame Frame_Depth = Frameset.get_depth_frame();
+			if (!Frame_Depth)
+			{
+				AsyncTask(ENamedThreads::GameThread, []()
+					{
+						UE_LOG(LogTemp, Warning, TEXT("RealSense - Depth frame is not valid !"));
+					}
+				);
+
+				return;
+			}
+			
+			rs2::video_frame Frame_Color = Frameset.get_color_frame();
+			if (!Frame_Color)
+			{
+				AsyncTask(ENamedThreads::GameThread, []()
+					{
+						UE_LOG(LogTemp, Warning, TEXT("RealSense - Color frame is not valid !"));
+					}
+				);
+
+				return;
+			}
+
+			rs2::pointcloud PointCloud;
+			PointCloud.map_to(Frame_Color);
+			rs2::points Points = PointCloud.calculate(Frame_Depth);
+			Points.export_to_ply(TCHAR_TO_UTF8(*In_Path), Frame_Color);
+
+			Rs_Pipeline.stop();
+
+			AsyncTask(ENamedThreads::GameThread, []()
+				{
+					
+				}
+			);
+		}
+	);
+}
+*/

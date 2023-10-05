@@ -15,7 +15,7 @@ public:
 #ifdef _WIN64
 	
 	void* Handle_realsense2;
-	void* Handle_Intel_Realsense;
+	//void* Handle_Intel_Realsense;
 
 #endif
 
