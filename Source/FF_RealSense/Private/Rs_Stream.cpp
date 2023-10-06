@@ -185,6 +185,7 @@ void ARs_Stream::Rs_Get_Stream()
 	{
 		Out_Distance = CurrentFrame.Distance;
 		this->OnFrameCaptured();
+		this->DelegateFrameCapture.Broadcast();
 		return;
 	}
 
@@ -251,6 +252,7 @@ void ARs_Stream::Rs_Get_Stream()
 		Out_Texture->UpdateResource();
 
 		this->OnFrameCaptured();
+		this->DelegateFrameCapture.Broadcast();
 		return;
 	}
 
@@ -269,6 +271,7 @@ void ARs_Stream::Rs_Get_Stream()
 		FlushRenderingCommands();
 
 		this->OnFrameCaptured();
+		this->DelegateFrameCapture.Broadcast();
 		return;
 	}
 }

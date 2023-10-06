@@ -50,6 +50,8 @@ public:
 
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateFrameCapture);
+
 UCLASS()
 class FF_REALSENSE_API ARs_Stream : public AActor
 {
@@ -99,28 +101,28 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	URsDeviceObject* In_Device = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	ERsStreamType StreamType = ERsStreamType::None;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	int32 StreamIndex = 0;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	int32 InFPS = 30;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	FVector2D Distance_Origin;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	bool bUseSrgb = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UTexture2D* Out_Texture = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<FRealSenseQr> Out_QR;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float Out_Distance = 0.f;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Initialize Thread", Keywords = "intel, realsense, thread, init"), Category = "FF_RealSense")
@@ -137,5 +139,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "FF_RealSense")
 	void OnFrameCaptured();
+
+	UPROPERTY(BlueprintAssignable, Category = "FF_RealSense")
+	FDelegateFrameCapture DelegateFrameCapture;
 
 };

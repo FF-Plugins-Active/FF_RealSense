@@ -121,7 +121,6 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*
 	return true;
 }
 
-/*
 void UFF_RealSenseBPLibrary::RealSense_Point_Cloud(FString In_Path)
 {
 	AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [In_Path]()
@@ -202,4 +201,3 @@ void UFF_RealSenseBPLibrary::RealSense_Point_Cloud(FString In_Path)
 		}
 	);
 }
-*/
