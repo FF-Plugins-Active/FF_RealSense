@@ -11,6 +11,7 @@ enum class ERsStreamType : uint8
 	Depth			UMETA(DisplayName = "Depth"),
 	Point_Cloud		UMETA(DisplayName = "Point Cloud"),
 	Distance		UMETA(DisplayName = "Distance"),
+	QR				UMETA(DisplayName = "QR"),
 };
 ENUM_CLASS_FLAGS(ERsStreamType)
 

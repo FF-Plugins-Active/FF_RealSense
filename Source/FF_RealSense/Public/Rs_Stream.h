@@ -114,9 +114,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	bool bUseSrgb = true;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
-	bool bEnableQr = true;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UTexture2D* Out_Texture = nullptr;
 

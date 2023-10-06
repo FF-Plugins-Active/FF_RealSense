@@ -10,9 +10,6 @@ THIRD_PARTY_INCLUDES_START
 #include "ImageView.h"
 #include "DecodeHints.h"
 #include "ReadBarcode.h"
-#include "GTIN.h"
-#include "MultiFormatWriter.h"
-#include "BitMatrix.h"
 THIRD_PARTY_INCLUDES_END
 
 // Sets default values
@@ -75,9 +72,7 @@ void FRs_Thread::Callback_Stream()
 	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(Parent_Actor->Rs_Pipeline, Parent_Actor->TimeOut, NULL);
 	rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-
-
-	if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared)
+	if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared || StreamType == ERsStreamType::QR)
 	{
 		int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
 
@@ -87,7 +82,7 @@ void FRs_Thread::Callback_Stream()
 			CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
 			CurrentFrame.BufferSize = BufferSize;
 
-			if (StreamType == ERsStreamType::Color && Parent_Actor->bEnableQr)
+			if (StreamType == ERsStreamType::QR)
 			{
 				ZXing::ImageFormat ImageFormat = ZXing::ImageFormat::BGRX;
 				ZXing::ImageView image
@@ -134,7 +129,7 @@ void FRs_Thread::Callback_Stream()
 
 			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense distance queue overloaded."));
+				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
 			}
 		}
 	}

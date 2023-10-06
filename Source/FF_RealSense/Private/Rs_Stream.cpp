@@ -85,6 +85,14 @@ bool ARs_Stream::Rs_Thread_Init()
 		RsFormat = RS2_FORMAT_Z16;
 		break;
 
+	case ERsStreamType::QR:
+
+		Size = FVector2D(1280, 800);
+		ThreadName = "RealSense Stream Thread for QR";
+		RsStreamType = RS2_STREAM_COLOR;
+		RsFormat = RS2_FORMAT_BGRA8;
+		break;
+
 	default:
 		
 		Size = FVector2D(1280, 800);
@@ -160,28 +168,6 @@ void ARs_Stream::Rs_Thread_Toggle(bool bIsPaused)
 
 void ARs_Stream::Rs_Get_Stream()
 {
-	if (StreamType == ERsStreamType::Distance)
-	{
-		if (Rs_Circ_Queue_Frame.IsEmpty())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no RealSense distance value to process."));
-			return;
-		}
-
-		FRealSenseTextureBuffer CurrentFrame;
-		if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense distance."));
-			return;
-		}
-
-		Out_Distance = CurrentFrame.Distance;
-
-		this->OnFrameCaptured();
-
-		return;
-	}
-
 	if (Rs_Circ_Queue_Frame.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is no RealSense frame to process."));
@@ -189,10 +175,16 @@ void ARs_Stream::Rs_Get_Stream()
 	}
 
 	FRealSenseTextureBuffer CurrentFrame;
-
 	if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense frame."));
+		return;
+	}
+
+	if (StreamType == ERsStreamType::Distance)
+	{
+		Out_Distance = CurrentFrame.Distance;
+		this->OnFrameCaptured();
 		return;
 	}
 
@@ -202,7 +194,7 @@ void ARs_Stream::Rs_Get_Stream()
 		return;
 	}
 
-	if (bEnableQr && StreamType == ERsStreamType::Color)
+	if (StreamType == ERsStreamType::QR)
 	{
 		Out_QR = CurrentFrame.QR_Params;
 	}
@@ -238,6 +230,13 @@ void ARs_Stream::Rs_Get_Stream()
 
 			return;
 
+		case ERsStreamType::QR:
+
+			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture->SRGB = bUseSrgb;
+			this->Out_Texture->NeverStream = true;
+			break;
+
 		default:
 			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
 			this->Out_Texture->SRGB = bUseSrgb;
@@ -248,12 +247,10 @@ void ARs_Stream::Rs_Get_Stream()
 		FTexture2DMipMap& Rs_Texture_Mip = Out_Texture->GetPlatformData()->Mips[0];
 		void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
 		FMemory::Memcpy(Rs_Texture_Data, CurrentFrame.Buffer, CurrentFrame.BufferSize);
-
 		Rs_Texture_Mip.BulkData.Unlock();
 		Out_Texture->UpdateResource();
 
 		this->OnFrameCaptured();
-
 		return;
 	}
 
@@ -272,7 +269,6 @@ void ARs_Stream::Rs_Get_Stream()
 		FlushRenderingCommands();
 
 		this->OnFrameCaptured();
-
 		return;
 	}
 }
