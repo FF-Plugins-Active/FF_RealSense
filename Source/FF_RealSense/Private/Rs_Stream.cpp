@@ -106,6 +106,9 @@ bool ARs_Stream::Rs_Thread_Init()
 	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, Size.X, Size.Y, RsFormat, FPS, NULL);
 	Rs_Pipeline = rs2_create_pipeline(In_Device->Rs_Context, NULL);
 	Rs_Pipeline_Profile = rs2_pipeline_start_with_config(Rs_Pipeline, Rs_Config, NULL);
+	
+	//rs2_sensor_list* SensorList = rs2_query_sensors(In_Device->Rs_Device, NULL);
+	//rs2_sensor* RGB_Sensor = rs2_create_sensor(SensorList, 0, NULL);
 
 	Rs_Thread = new FRs_Thread(this);
 	if (!Rs_Thread)
@@ -207,21 +210,21 @@ void ARs_Stream::Rs_Get_Stream()
 
 		case ERsStreamType::Color:
 
-			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
 			this->Out_Texture->SRGB = bUseSrgb;
 			this->Out_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Infrared:
 
-			this->Out_Texture = UTexture2D::CreateTransient(1280, 720, PF_B8G8R8A8);
+			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
 			this->Out_Texture->SRGB = bUseSrgb;
 			this->Out_Texture->NeverStream = true;
 			break;
 
 		case ERsStreamType::Depth:
 
-			this->Out_Texture = UTexture2D::CreateTransient(1280, 720, PF_G16);
+			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_G16);
 			this->Out_Texture->SRGB = false;
 			this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
 			this->Out_Texture->NeverStream = true;
@@ -233,13 +236,13 @@ void ARs_Stream::Rs_Get_Stream()
 
 		case ERsStreamType::QR:
 
-			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
 			this->Out_Texture->SRGB = bUseSrgb;
 			this->Out_Texture->NeverStream = true;
 			break;
 
 		default:
-			this->Out_Texture = UTexture2D::CreateTransient(1280, 800, PF_B8G8R8A8);
+			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
 			this->Out_Texture->SRGB = bUseSrgb;
 			this->Out_Texture->NeverStream = true;
 			break;

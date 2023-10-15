@@ -84,16 +84,15 @@ void FRs_Thread::Callback_Stream()
 
 			if (StreamType == ERsStreamType::QR)
 			{
-				ZXing::ImageFormat ImageFormat = ZXing::ImageFormat::BGRX;
-				ZXing::ImageView image
+				ZXing::ImageView Image
 				{
-					reinterpret_cast<uint8*>(CurrentFrame.Buffer), (int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y, ImageFormat
+					reinterpret_cast<uint8*>(CurrentFrame.Buffer), (int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y, ZXing::ImageFormat::BGRX
 				};
 
 				ZXing::DecodeHints hints;
 				hints.setTextMode(ZXing::TextMode::HRI);
 				hints.setEanAddOnSymbol(ZXing::EanAddOnSymbol::Read);
-				auto Results = ZXing::ReadBarcodes(image, hints);
+				auto Results = ZXing::ReadBarcodes(Image, hints);
 				if (!Results.empty())
 				{
 					for (int32 i = 0; i < Results.size(); i++)

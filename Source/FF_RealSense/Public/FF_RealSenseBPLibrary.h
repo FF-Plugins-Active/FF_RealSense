@@ -87,7 +87,4 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
 	static bool Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Capture Point Cloud", Keywords = "intel, realsense, capture, point, cloud"), Category = "FF_Realsense")
-	static void RealSense_Point_Cloud(FString In_Path);
-
 };
