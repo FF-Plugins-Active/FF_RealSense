@@ -51,7 +51,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::Color:
 		
 		Size = FVector2D(1280, 800);
-		ThreadName = "RealSense Stream Thread for Color";
+		ThreadName = "Rs_Thread_Clr";
 		RsStreamType = RS2_STREAM_COLOR;
 		RsFormat = RS2_FORMAT_BGRA8;
 		break;
@@ -59,7 +59,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::Infrared:
 		
 		Size = FVector2D(1280, 720);
-		ThreadName = "RealSense Stream Thread for Infrared";
+		ThreadName = "Rs_Thread_Inf";
 		RsStreamType = RS2_STREAM_INFRARED;
 		RsFormat = RS2_FORMAT_BGRA8;
 		break;
@@ -67,7 +67,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::Depth:
 		
 		Size = FVector2D(1280, 720);
-		ThreadName = "RealSense Stream Thread for Depth";
+		ThreadName = "Rs_Thread_Dep";
 		RsStreamType = RS2_STREAM_DEPTH;
 		RsFormat = RS2_FORMAT_Z16;
 		break;
@@ -80,7 +80,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::Distance:
 
 		Size = FVector2D(1280, 720);
-		ThreadName = "RealSense Stream Thread for Distance";
+		ThreadName = "Rs_Thread_Dis";
 		RsStreamType = RS2_STREAM_DEPTH;
 		RsFormat = RS2_FORMAT_Z16;
 		break;
@@ -88,7 +88,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	case ERsStreamType::QR:
 
 		Size = FVector2D(1280, 800);
-		ThreadName = "RealSense Stream Thread for QR";
+		ThreadName = "Rs_Thread_Qr";
 		RsStreamType = RS2_STREAM_COLOR;
 		RsFormat = RS2_FORMAT_BGRA8;
 		break;
@@ -96,7 +96,7 @@ bool ARs_Stream::Rs_Thread_Init()
 	default:
 		
 		Size = FVector2D(1280, 800);
-		ThreadName = "RealSense Stream Thread for Color";
+		ThreadName = "Rs_Thread_Clr";
 		RsStreamType = RS2_STREAM_COLOR;
 		RsFormat = RS2_FORMAT_BGRA8;
 		break;
