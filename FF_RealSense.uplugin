@@ -23,7 +23,11 @@
 	],
 	"Plugins": [
 		{
-			"Name": "ZXingForUnreal",
+			"Name": "FF_QR_Processor",
+			"Enabled": true
+		},
+		{
+			"Name": "ExtendedVars",
 			"Enabled": true
 		}
 	]

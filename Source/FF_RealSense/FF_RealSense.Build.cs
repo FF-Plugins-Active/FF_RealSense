@@ -52,10 +52,9 @@ public class FF_RealSense : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Projects",
-				"RHI",				// Rs_Stream -> Update Texture
-				"RenderCore",		// Rs_Stream -> Update Texture
-				"ZXing",
-                "ZXingForUE4",
+                "RHI",
+				"RenderCore",
+                "FF_QR_Processor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

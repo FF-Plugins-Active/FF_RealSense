@@ -5,13 +5,6 @@
 // Custom Includes.
 #include "Rs_Stream.h"
 
-THIRD_PARTY_INCLUDES_START
-// ZXing Includes
-#include "ImageView.h"
-#include "DecodeHints.h"
-#include "ReadBarcode.h"
-THIRD_PARTY_INCLUDES_END
-
 // Sets default values
 FRs_Thread::FRs_Thread(ARs_Stream* In_Parent_Actor)
 {
@@ -84,31 +77,12 @@ void FRs_Thread::Callback_Stream()
 
 			if (StreamType == ERsStreamType::QR)
 			{
-				ZXing::ImageView Image
-				{
-					reinterpret_cast<uint8*>(CurrentFrame.Buffer), (int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y, ZXing::ImageFormat::BGRX
-				};
+				FString ZXing_Error = "";
+				TArray<FZXingScanResult> Temp_Qr_Results;
 
-				ZXing::DecodeHints hints;
-				hints.setTextMode(ZXing::TextMode::HRI);
-				hints.setEanAddOnSymbol(ZXing::EanAddOnSymbol::Read);
-				auto Results = ZXing::ReadBarcodes(Image, hints);
-				if (!Results.empty())
+				if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
 				{
-					for (int32 i = 0; i < Results.size(); i++)
-					{
-						FRealSenseQr Result;
-						Result.QR_Text = FText::FromString(ANSI_TO_TCHAR(Results[i].text().c_str()));
-						FVector2D TopLeft = FVector2D(Results[i].position().topLeft().x, Results[i].position().topLeft().y);
-						FVector2D TopRight = FVector2D(Results[i].position().topRight().x, Results[i].position().topRight().y);
-						FVector2D BottomLeft = FVector2D(Results[i].position().bottomLeft().x, Results[i].position().bottomLeft().y);
-						FVector2D BottomRight = FVector2D(Results[i].position().bottomRight().x, Results[i].position().bottomRight().y);
-						Result.QR_Points.Add(FVector2D(TopLeft));
-						Result.QR_Points.Add(FVector2D(BottomLeft));
-						Result.QR_Points.Add(FVector2D(BottomRight));
-						Result.QR_Points.Add(FVector2D(TopRight));
-						CurrentFrame.QR_Params.Add(Result);
-					}
+					CurrentFrame.QR_Params = Temp_Qr_Results;
 				}
 			}
 

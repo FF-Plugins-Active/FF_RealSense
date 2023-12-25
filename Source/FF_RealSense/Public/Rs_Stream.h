@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+// External Includes.
+#include "FF_QR_ProcessorBPLibrary.h"
+
 // Custom Includes
 #include "Rs_Thread.h"
 #include "FF_RealSenseBPLibrary.h"
@@ -14,21 +17,6 @@
 #include "Containers/CircularQueue.h"
 
 #include "Rs_Stream.generated.h"
-
-USTRUCT(BlueprintType)
-struct FF_REALSENSE_API FRealSenseQr
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(BlueprintReadOnly)
-	FText QR_Text;
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<FVector2D> QR_Points;
-
-};
 
 USTRUCT()
 struct FF_REALSENSE_API FRealSenseTextureBuffer
@@ -46,7 +34,7 @@ public:
 	float Distance = 0;
 
 	UPROPERTY()
-	TArray<FRealSenseQr> QR_Params;
+	TArray<FZXingScanResult> QR_Params;
 
 };
 
@@ -120,7 +108,7 @@ public:
 	UTexture2D* Out_Texture = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TArray<FRealSenseQr> Out_QR;
+	TArray<FZXingScanResult> Out_QR;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float Out_Distance = 0.f;
