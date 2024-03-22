@@ -39,9 +39,6 @@ void FRs_Thread::Stop()
 
 uint32 FRs_Thread::Run()
 {
-	// Thread selector
-	// FTaskTagScope Scope(ETaskTag::EGameThread);
-
 	while (bStartThread)
 	{
 		this->Callback_Stream();
@@ -69,27 +66,29 @@ void FRs_Thread::Callback_Stream()
 	{
 		int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
 
-		if (BufferSize > 0)
+		if (BufferSize <= 0)
 		{
-			FRealSenseTextureBuffer CurrentFrame;
-			CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
-			CurrentFrame.BufferSize = BufferSize;
+			return;
+		}
 
-			if (StreamType == ERsStreamType::QR)
+		FRealSenseTextureBuffer CurrentFrame;
+		CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+		CurrentFrame.BufferSize = BufferSize;
+
+		if (StreamType == ERsStreamType::QR)
+		{
+			FString ZXing_Error = "";
+			TArray<FZXingScanResult> Temp_Qr_Results;
+
+			if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
 			{
-				FString ZXing_Error = "";
-				TArray<FZXingScanResult> Temp_Qr_Results;
-
-				if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
-				{
-					CurrentFrame.QR_Params = Temp_Qr_Results;
-				}
+				CurrentFrame.QR_Params = Temp_Qr_Results;
 			}
+		}
 
-			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
-			}
+		if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
 		}
 	}
 
@@ -110,14 +109,3 @@ void FRs_Thread::Callback_Stream()
 	rs2_release_frame(First_Frame);
 	rs2_release_frame(Rs_Frames);
 }
-
-/*
-void Test()
-{
-	const std::chrono::steady_clock::duration StartTime = std::chrono::high_resolution_clock::now().time_since_epoch();
-	while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch() - StartTime).count() < 30)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Test Chrono"));
-	}
-}
-*/

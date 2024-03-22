@@ -106,9 +106,6 @@ bool ARs_Stream::Rs_Thread_Init()
 	rs2_config_enable_stream(Rs_Config, RsStreamType, StreamIndex, Size.X, Size.Y, RsFormat, FPS, NULL);
 	Rs_Pipeline = rs2_create_pipeline(In_Device->Rs_Context, NULL);
 	Rs_Pipeline_Profile = rs2_pipeline_start_with_config(Rs_Pipeline, Rs_Config, NULL);
-	
-	//rs2_sensor_list* SensorList = rs2_query_sensors(In_Device->Rs_Device, NULL);
-	//rs2_sensor* RGB_Sensor = rs2_create_sensor(SensorList, 0, NULL);
 
 	Rs_Thread = new FRs_Thread(this);
 	if (!Rs_Thread)
