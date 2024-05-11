@@ -7,6 +7,13 @@
 // UE Includes.
 #include "HAL/Runnable.h"
 
+// Custom Include
+#include "Rs_Enums.h"
+
+THIRD_PARTY_INCLUDES_START
+#include <librealsense2/rs.hpp>
+THIRD_PARTY_INCLUDES_END
+
 // Fordward Declerations.
 class FRunnableThread;
 class ARs_Stream;
