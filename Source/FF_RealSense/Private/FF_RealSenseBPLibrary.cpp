@@ -3,6 +3,9 @@
 #include "FF_RealSenseBPLibrary.h"
 #include "FF_RealSense.h"
 
+// Custom Includes.
+#include "Rs_Stream.h"
+
 #ifdef __ANDROID__
 THIRD_PARTY_INCLUDES_START
 #include <jni.h>
@@ -117,6 +120,22 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*
 	rs2_delete_device(In_Device->Rs_Device);
 
 	In_Device = nullptr;
+
+	return true;
+}
+
+bool UFF_RealSenseBPLibrary::Realsense_Buffer_Array(FRealSenseTextureBuffer BufferStruct, TArray<uint8>& Out_Array)
+{
+	if (!BufferStruct.Buffer || BufferStruct.BufferSize <= 0)
+	{
+		return false;
+	}
+
+	TArray<uint8> TempArray;
+	TempArray.SetNum(BufferStruct.BufferSize);
+
+	memcpy(TempArray.GetData(), BufferStruct.Buffer, BufferStruct.BufferSize);
+	Out_Array = TempArray;
 
 	return true;
 }

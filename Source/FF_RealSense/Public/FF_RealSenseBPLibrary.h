@@ -4,7 +4,10 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-// Custom Include
+// External Includes.
+#include "FF_QR_ProcessorBPLibrary.h"
+
+// Custom Includes.
 #include "Rs_Enums.h"
 
 THIRD_PARTY_INCLUDES_START
@@ -12,6 +15,29 @@ THIRD_PARTY_INCLUDES_START
 THIRD_PARTY_INCLUDES_END
 
 #include "FF_RealSenseBPLibrary.generated.h"
+
+USTRUCT(BlueprintType)
+struct FF_REALSENSE_API FRealSenseTextureBuffer
+{
+	GENERATED_BODY()
+
+public:
+
+	uint8* Buffer = NULL;
+
+	UPROPERTY(BlueprintReadOnly)
+	int64 BufferSize = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	float Distance = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FZXingScanResult> QR_Params;
+
+	UPROPERTY(BlueprintReadOnly)
+	ERsStreamType StreamType = ERsStreamType::None;
+
+};
 
 UCLASS(BlueprintType)
 class FF_REALSENSE_API URsDeviceList : public UObject
@@ -86,5 +112,8 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
 	static bool Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as Array", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
+	static bool Realsense_Buffer_Array(FRealSenseTextureBuffer BufferStruct, TArray<uint8>& Out_Array);
 
 };

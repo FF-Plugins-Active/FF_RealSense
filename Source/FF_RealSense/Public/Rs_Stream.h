@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-// External Includes.
-#include "FF_QR_ProcessorBPLibrary.h"
-
 // Custom Includes
 #include "Rs_Thread.h"
 #include "FF_RealSenseBPLibrary.h"
@@ -17,26 +14,6 @@
 #include "Containers/CircularQueue.h"
 
 #include "Rs_Stream.generated.h"
-
-USTRUCT()
-struct FF_REALSENSE_API FRealSenseTextureBuffer
-{
-	GENERATED_BODY()
-
-public:
-
-	uint8* Buffer = NULL;
-
-	UPROPERTY()
-	int64 BufferSize = 0;
-
-	UPROPERTY()
-	float Distance = 0;
-
-	UPROPERTY()
-	TArray<FZXingScanResult> QR_Params;
-
-};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateFrameCapture);
 
@@ -74,7 +51,6 @@ public:
 	// Parameters.
 	float Rate = 0.f;
 	float TimeOut = 0.f;
-	int32 FPS = 30;
 	FVector2D Size;
 
 	// RealSense Related Variables.
@@ -96,7 +72,7 @@ public:
 	int32 StreamIndex = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
-	int32 InFPS = 30;
+	int32 FPS = 30;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	FVector2D Distance_Origin;
@@ -108,10 +84,7 @@ public:
 	UTexture2D* Out_Texture = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TArray<FZXingScanResult> Out_QR;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	float Out_Distance = 0.f;
+	FRealSenseTextureBuffer CurrentFrame;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "RealSense - Initialize Thread", Keywords = "intel, realsense, thread, init"), Category = "FF_RealSense")
 	virtual bool Rs_Thread_Init();

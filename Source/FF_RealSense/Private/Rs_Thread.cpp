@@ -62,48 +62,83 @@ void FRs_Thread::Callback_Stream()
 	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(Parent_Actor->Rs_Pipeline, Parent_Actor->TimeOut, NULL);
 	rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-	if (StreamType == ERsStreamType::Color || StreamType == ERsStreamType::Depth || StreamType == ERsStreamType::Infrared || StreamType == ERsStreamType::QR)
-	{
-		int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
-
-		if (BufferSize <= 0)
+	auto BufferCallback = [](rs2_frame* First_Frame)->FRealSenseTextureBuffer
 		{
-			return;
-		}
+			int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
 
-		FRealSenseTextureBuffer CurrentFrame;
-		CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
-		CurrentFrame.BufferSize = BufferSize;
-
-		if (StreamType == ERsStreamType::QR)
-		{
-			FString ZXing_Error = "";
-			TArray<FZXingScanResult> Temp_Qr_Results;
-
-			if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
+			if (BufferSize <= 0)
 			{
-				CurrentFrame.QR_Params = Temp_Qr_Results;
+				return FRealSenseTextureBuffer();
 			}
-		}
 
-		if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
-		}
+			FRealSenseTextureBuffer CurrentFrame;
+			CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
+			CurrentFrame.BufferSize = BufferSize;
+
+			return CurrentFrame;
+		};
+
+	FRealSenseTextureBuffer CurrentFrame;
+
+	switch (StreamType)
+	{
+		case ERsStreamType::None:
+			return;
+
+		case ERsStreamType::Point_Cloud:
+			return;
+		
+		case ERsStreamType::Color:
+			{
+				CurrentFrame = BufferCallback(First_Frame);
+				break;
+			}
+		
+		case ERsStreamType::Infrared:
+			{
+				CurrentFrame = BufferCallback(First_Frame);
+				break;
+			}
+
+		case ERsStreamType::Depth:
+			{
+				CurrentFrame = BufferCallback(First_Frame);
+				break;
+			}
+		
+		case ERsStreamType::QR:
+			{
+				CurrentFrame = BufferCallback(First_Frame);
+
+				FString ZXing_Error = "";
+				TArray<FZXingScanResult> Temp_Qr_Results;
+
+				if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
+				{
+					CurrentFrame.QR_Params = Temp_Qr_Results;
+				}
+
+				break;
+			}
+
+		case ERsStreamType::Distance:
+
+			if (rs2_is_frame_extendable_to(First_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
+			{
+				CurrentFrame.Distance = rs2_depth_frame_get_distance(First_Frame, Parent_Actor->Distance_Origin.X, Parent_Actor->Distance_Origin.Y, NULL);
+				break;
+			}
+			
+		default:
+			{
+				CurrentFrame = BufferCallback(First_Frame);
+				break;
+			}
 	}
 
-	if (StreamType == ERsStreamType::Distance)
+	if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
 	{
-		if (rs2_is_frame_extendable_to(First_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
-		{
-			FRealSenseTextureBuffer CurrentFrame;
-			CurrentFrame.Distance = rs2_depth_frame_get_distance(First_Frame, Parent_Actor->Distance_Origin.X, Parent_Actor->Distance_Origin.Y, NULL);
-
-			if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
-			}
-		}
+		UE_LOG(LogTemp, Warning, TEXT("RealSense - RealSense frame queue overloaded."));
 	}
 
 	rs2_release_frame(First_Frame);

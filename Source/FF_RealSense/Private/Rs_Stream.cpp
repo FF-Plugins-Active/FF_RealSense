@@ -33,9 +33,9 @@ void ARs_Stream::Tick(float DeltaTime)
 bool ARs_Stream::Rs_Thread_Init()
 {
 	// Is FPS bigger than 30, use 30.
-	if (InFPS < 30)
+	if (FPS < 30)
 	{
-		FPS = InFPS;
+		FPS = 30;
 	}
 
 	Rate = (float)1 / FPS;
@@ -174,8 +174,7 @@ void ARs_Stream::Rs_Get_Stream()
 		return;
 	}
 
-	FRealSenseTextureBuffer CurrentFrame;
-	if (!Rs_Circ_Queue_Frame.Dequeue(CurrentFrame))
+	if (!Rs_Circ_Queue_Frame.Dequeue(this->CurrentFrame))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RealSense - There is a problem to dequeue RealSense frame."));
 		return;
@@ -183,21 +182,15 @@ void ARs_Stream::Rs_Get_Stream()
 
 	if (StreamType == ERsStreamType::Distance)
 	{
-		Out_Distance = CurrentFrame.Distance;
 		this->OnFrameCaptured();
 		this->DelegateFrameCapture.Broadcast();
 		return;
 	}
 
-	if (!CurrentFrame.Buffer)
+	if (!this->CurrentFrame.Buffer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RealSense - Current frame buffer is not valid."));
 		return;
-	}
-
-	if (StreamType == ERsStreamType::QR)
-	{
-		Out_QR = CurrentFrame.QR_Params;
 	}
 
 	if (!IsValid(Out_Texture))
@@ -247,7 +240,7 @@ void ARs_Stream::Rs_Get_Stream()
 
 		FTexture2DMipMap& Rs_Texture_Mip = Out_Texture->GetPlatformData()->Mips[0];
 		void* Rs_Texture_Data = Rs_Texture_Mip.BulkData.Lock(LOCK_READ_WRITE);
-		FMemory::Memcpy(Rs_Texture_Data, CurrentFrame.Buffer, CurrentFrame.BufferSize);
+		FMemory::Memcpy(Rs_Texture_Data, this->CurrentFrame.Buffer, this->CurrentFrame.BufferSize);
 		Rs_Texture_Mip.BulkData.Unlock();
 		Out_Texture->UpdateResource();
 
@@ -258,12 +251,12 @@ void ARs_Stream::Rs_Get_Stream()
 
 	else
 	{
-		ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([this, CurrentFrame](FRHICommandListImmediate& CommandList)
+		ENQUEUE_RENDER_COMMAND(UpdateTextureDataCommand)([this](FRHICommandListImmediate& CommandList)
 			{
 				uint32 DestStride = 0;
 				FRHITexture* TextureRHI = this->Out_Texture->GetResource()->GetTextureRHI();
 				uint32_t* Buffer = (uint32_t*)RHILockTexture2D(TextureRHI, 0, EResourceLockMode::RLM_WriteOnly, DestStride, false, true);
-				FMemory::Memcpy(Buffer, CurrentFrame.Buffer, CurrentFrame.BufferSize);
+				FMemory::Memcpy(Buffer, this->CurrentFrame.Buffer, this->CurrentFrame.BufferSize);
 				RHIUnlockTexture2D(TextureRHI, 0, false, true);
 			}
 		);

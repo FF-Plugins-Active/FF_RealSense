@@ -14,8 +14,6 @@ public class FF_RealSense : ModuleRules
         bEnableExceptions = true;
         bUseRTTI = true;
 
-        bUseUnity = false;
-
         if (UnrealTargetPlatform.Win64 == Target.Platform)
         {
             string Location_Realsense = "../Source/FF_RealSense/ThirdParty/Windows/include";
