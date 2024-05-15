@@ -17,21 +17,17 @@ public class FF_RealSense
 	static RsContext rsContext;
 	
 	//@Keep
-	public static boolean RealSense_Init(final Activity activity)
+	public static void RealSense_Init(final Activity activity)
 	{
 		Context context = activity;
 		rsContext = new RsContext();
 		rsContext.init(context);
-
-		return true;
 	}
 	
 	//@Keep
-	public static boolean RealSense_Destruct(String[] args)
+	public static void RealSense_Destruct(String[] args)
 	{
 		rsContext.close();
 		rsContext = null;
-
-		return true;
 	}
 }

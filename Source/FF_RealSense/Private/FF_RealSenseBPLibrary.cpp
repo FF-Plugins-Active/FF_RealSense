@@ -6,14 +6,6 @@
 // Custom Includes.
 #include "Rs_Stream.h"
 
-#ifdef __ANDROID__
-THIRD_PARTY_INCLUDES_START
-#include <jni.h>
-THIRD_PARTY_INCLUDES_END
-#include "Android/AndroidJNI.h"
-#include "Android/AndroidApplication.h"
-#endif
-
 UFF_RealSenseBPLibrary::UFF_RealSenseBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -33,61 +25,6 @@ void URsDeviceObject::BeginDestroy()
 	rs2_delete_device(this->Rs_Device);
 
 	Super::BeginDestroy();
-}
-
-bool UFF_RealSenseBPLibrary::Realsense_Android_Init()
-{
-#ifdef __ANDROID__
-
-	JNIEnv* JavaEnv = FAndroidApplication::GetJavaEnv();
-
-	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
-	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
-	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "RealSense_Init", "(Landroid/app/Activity;)Ljava/lang/Boolean", false);
-
-	jobject ActivityOjbect = FJavaWrapper::GameActivityThis;
-	bool RetVal = JavaEnv->CallStaticBooleanMethod(RealSense_Class, RealSense_Method, ActivityOjbect);
-
-	if (RetVal)
-	{
-		return true;
-	}
-
-	else
-	{
-		return false;
-	}
-
-#else
-	return true;
-#endif
-}
-
-bool UFF_RealSenseBPLibrary::Realsense_Android_Destruct()
-{
-#ifdef __ANDROID__
-
-	JNIEnv* JavaEnv = FAndroidApplication::GetJavaEnv();
-
-	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
-	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
-	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "(Ljava/lang/String;)Ljava/lang/Boolean", "Realsense_Destruct", false);
-
-	bool RetVal = JavaEnv->CallStaticBooleanMethod(RealSense_Class, RealSense_Method);
-
-	if (RetVal)
-	{
-		return true;
-	}
-
-	else
-	{
-		return false;
-	}
-
-#else
-	return true;
-#endif
 }
 
 bool UFF_RealSenseBPLibrary::Realsense_Device_List_Get(URsDeviceList*& Out_Device_List)
