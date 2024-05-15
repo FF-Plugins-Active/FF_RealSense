@@ -35,7 +35,7 @@ void URsDeviceObject::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Init_Android()
+void UFF_RealSenseBPLibrary::Realsense_Android_Init()
 {
 #ifdef __ANDROID__
 
@@ -43,10 +43,25 @@ void UFF_RealSenseBPLibrary::Realsense_Init_Android()
 
 	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
 	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
-	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "RealSenseInit", "(Landroid/app/Activity;)V", false);
+	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "RealSense_Init", "(Landroid/app/Activity;)V", false);
 
 	jobject ActivityOjbect = FJavaWrapper::GameActivityThis;
 	JavaEnv->CallStaticVoidMethod(RealSense_Class, RealSense_Method, ActivityOjbect);
+
+#endif
+}
+
+void UFF_RealSenseBPLibrary::Realsense_Android_Destruct()
+{
+#ifdef __ANDROID__
+
+	JNIEnv* JavaEnv = FAndroidApplication::GetJavaEnv();
+
+	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
+	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
+	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "(Ljava/lang/String;)V", "Realsense_Destruct", false);
+
+	JavaEnv->CallStaticVoidMethod(RealSense_Class, RealSense_Method);
 
 #endif
 }

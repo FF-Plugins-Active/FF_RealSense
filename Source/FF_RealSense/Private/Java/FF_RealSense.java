@@ -10,24 +10,24 @@ import android.content.res.Configuration;
 
 // FF Reality - Realsense
 import com.intel.realsense.librealsense.RsContext;
-//import com.intel.realsense.librealsense.Colorizer;
-//import com.intel.realsense.librealsense.Config;
-//import com.intel.realsense.librealsense.DeviceList;
-//import com.intel.realsense.librealsense.DeviceListener;
-//import com.intel.realsense.librealsense.FrameSet;
-//import com.intel.realsense.librealsense.GLRsSurfaceView;
-//import com.intel.realsense.librealsense.Pipeline;
-//import com.intel.realsense.librealsense.PipelineProfile;
-//import com.intel.realsense.librealsense.StreamType;
 
 @Keep
-public class FF_RealSense {
+public class FF_RealSense
+{
+	static RsContext rsContext;
 	
-@Keep
-	public static void RealSenseInit(final Activity activity)
+	//@Keep
+	public static void RealSense_Init(final Activity activity)
 	{
 		Context context = activity;
-		RsContext rsContext = new RsContext();
+		rsContext = new RsContext();
 		rsContext.init(context);
+	}
+	
+	//@Keep
+	public static void RealSense_Destruct(String[] args)
+	{
+		rsContext.close();
+		rsContext = null;
 	}
 }

@@ -106,8 +106,11 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Init Android", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
-	static void Realsense_Init_Android();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Android Init", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
+	static void Realsense_Android_Init();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Android Destruct", ToolTip = "You HAVE to call this node on game close.", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
+	static void Realsense_Android_Destruct();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_List_Get(URsDeviceList*& Out_Device_List);
