@@ -35,7 +35,7 @@ void URsDeviceObject::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Android_Init()
+bool UFF_RealSenseBPLibrary::Realsense_Android_Init()
 {
 #ifdef __ANDROID__
 
@@ -43,15 +43,27 @@ void UFF_RealSenseBPLibrary::Realsense_Android_Init()
 
 	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
 	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
-	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "RealSense_Init", "(Landroid/app/Activity;)V", false);
+	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "RealSense_Init", "(Landroid/app/Activity;)Ljava/lang/Boolean", false);
 
 	jobject ActivityOjbect = FJavaWrapper::GameActivityThis;
-	JavaEnv->CallStaticVoidMethod(RealSense_Class, RealSense_Method, ActivityOjbect);
+	bool RetVal = JavaEnv->CallStaticBooleanMethod(RealSense_Class, RealSense_Method, ActivityOjbect);
 
+	if (RetVal)
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+
+#else
+	return true;
 #endif
 }
 
-void UFF_RealSenseBPLibrary::Realsense_Android_Destruct()
+bool UFF_RealSenseBPLibrary::Realsense_Android_Destruct()
 {
 #ifdef __ANDROID__
 
@@ -59,10 +71,22 @@ void UFF_RealSenseBPLibrary::Realsense_Android_Destruct()
 
 	const ANSICHAR* RealSense_Class_Name = "com/Plugins/FF_RealSense/FF_RealSense";
 	jclass RealSense_Class = FAndroidApplication::FindJavaClass(RealSense_Class_Name);
-	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "(Ljava/lang/String;)V", "Realsense_Destruct", false);
+	jmethodID RealSense_Method = FJavaWrapper::FindStaticMethod(JavaEnv, RealSense_Class, "(Ljava/lang/String;)Ljava/lang/Boolean", "Realsense_Destruct", false);
 
-	JavaEnv->CallStaticVoidMethod(RealSense_Class, RealSense_Method);
+	bool RetVal = JavaEnv->CallStaticBooleanMethod(RealSense_Class, RealSense_Method);
 
+	if (RetVal)
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+
+#else
+	return true;
 #endif
 }
 
