@@ -32,8 +32,7 @@ void ARs_Stream::Tick(float DeltaTime)
 
 bool ARs_Stream::Rs_Thread_Init()
 {
-	// Is FPS bigger than 30, use 30.
-	if (FPS < 30)
+	if (FPS <= 0)
 	{
 		FPS = 30;
 	}
@@ -43,63 +42,53 @@ bool ARs_Stream::Rs_Thread_Init()
 
 	switch (StreamType)
 	{
-	case ERsStreamType::None:
+		case ERsStreamType::Color:
 		
-		UE_LOG(LogTemp, Warning, TEXT("RealSense - Select a proper stream type to use."));
-		return false;
-
-	case ERsStreamType::Color:
-		
-		Size = FVector2D(1280, 800);
-		ThreadName = "Rs_Thread_Clr";
-		RsStreamType = RS2_STREAM_COLOR;
-		RsFormat = RS2_FORMAT_BGRA8;
-		break;
+			Size = FVector2D(1280, 800);
+			ThreadName = "Rs_Thread_Clr";
+			RsStreamType = RS2_STREAM_COLOR;
+			RsFormat = RS2_FORMAT_BGRA8;
+			break;
 	
-	case ERsStreamType::Infrared:
+		case ERsStreamType::Infrared:
 		
-		Size = FVector2D(1280, 720);
-		ThreadName = "Rs_Thread_Inf";
-		RsStreamType = RS2_STREAM_INFRARED;
-		RsFormat = RS2_FORMAT_BGRA8;
-		break;
+			Size = FVector2D(1280, 720);
+			ThreadName = "Rs_Thread_Inf";
+			RsStreamType = RS2_STREAM_INFRARED;
+			RsFormat = RS2_FORMAT_BGRA8;
+			break;
 	
-	case ERsStreamType::Depth:
+		case ERsStreamType::Depth:
 		
-		Size = FVector2D(1280, 720);
-		ThreadName = "Rs_Thread_Dep";
-		RsStreamType = RS2_STREAM_DEPTH;
-		RsFormat = RS2_FORMAT_Z16;
-		break;
-	
-	case ERsStreamType::Point_Cloud:
+			Size = FVector2D(1280, 720);
+			ThreadName = "Rs_Thread_Dep";
+			RsStreamType = RS2_STREAM_DEPTH;
+			RsFormat = RS2_FORMAT_Z16;
+			break;
+
+		case ERsStreamType::QR:
+
+			Size = FVector2D(1280, 800);
+			ThreadName = "Rs_Thread_Qr";
+			RsStreamType = RS2_STREAM_COLOR;
+			RsFormat = RS2_FORMAT_BGRA8;
+			break;
+
+		case ERsStreamType::Distance:
+
+			Size = FVector2D(1280, 720);
+			ThreadName = "Rs_Thread_Dis";
+			RsStreamType = RS2_STREAM_DEPTH;
+			RsFormat = RS2_FORMAT_Z16;
+			break;
+
+		default:
 		
-		UE_LOG(LogTemp, Warning, TEXT("RealSense - Currently Point cloud doesn't supported."));
-		return false;
-
-	case ERsStreamType::Distance:
-
-		Size = FVector2D(1280, 720);
-		ThreadName = "Rs_Thread_Dis";
-		RsStreamType = RS2_STREAM_DEPTH;
-		RsFormat = RS2_FORMAT_Z16;
-		break;
-
-	case ERsStreamType::QR:
-
-		Size = FVector2D(1280, 800);
-		ThreadName = "Rs_Thread_Qr";
-		RsStreamType = RS2_STREAM_COLOR;
-		RsFormat = RS2_FORMAT_BGRA8;
-		break;
-
-	default:
-		
-		Size = FVector2D(1280, 800);
-		ThreadName = "Rs_Thread_Clr";
-		RsStreamType = RS2_STREAM_COLOR;
-		RsFormat = RS2_FORMAT_BGRA8;
-		break;
+			Size = FVector2D(1280, 800);
+			ThreadName = "Rs_Thread_Clr";
+			RsStreamType = RS2_STREAM_COLOR;
+			RsFormat = RS2_FORMAT_BGRA8;
+			break;
 	}
 
 	Rs_Config = rs2_create_config(NULL);
@@ -182,8 +171,8 @@ void ARs_Stream::Rs_Get_Stream()
 
 	if (StreamType == ERsStreamType::Distance)
 	{
-		this->OnFrameCaptured();
-		this->DelegateFrameCapture.Broadcast();
+		this->OnFrameCaptured_GameThread();
+		this->DelegateRs_GameThread.Broadcast();
 		return;
 	}
 
@@ -197,45 +186,44 @@ void ARs_Stream::Rs_Get_Stream()
 	{
 		switch (StreamType)
 		{
+			case ERsStreamType::Color:
 
-		case ERsStreamType::Color:
+				this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+				this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+				this->Out_Texture->SRGB = bUseSrgb;
+				this->Out_Texture->NeverStream = true;
+				break;
 
-			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-			this->Out_Texture->SRGB = bUseSrgb;
-			this->Out_Texture->NeverStream = true;
-			break;
+			case ERsStreamType::QR:
 
-		case ERsStreamType::Infrared:
+				this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+				this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+				this->Out_Texture->SRGB = bUseSrgb;
+				this->Out_Texture->NeverStream = true;
+				break;
 
-			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-			this->Out_Texture->SRGB = bUseSrgb;
-			this->Out_Texture->NeverStream = true;
-			break;
+			case ERsStreamType::Infrared:
 
-		case ERsStreamType::Depth:
+				this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+				this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+				this->Out_Texture->SRGB = bUseSrgb;
+				this->Out_Texture->NeverStream = true;
+				break;
 
-			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_G16);
-			this->Out_Texture->SRGB = false;
-			this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
-			this->Out_Texture->NeverStream = true;
-			break;
+			case ERsStreamType::Depth:
 
-		case ERsStreamType::Point_Cloud:
+				this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_G16);
+				this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+				this->Out_Texture->SRGB = false;
+				this->Out_Texture->NeverStream = true;
+				break;
 
-			return;
-
-		case ERsStreamType::QR:
-
-			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-			this->Out_Texture->SRGB = bUseSrgb;
-			this->Out_Texture->NeverStream = true;
-			break;
-
-		default:
-			this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
-			this->Out_Texture->SRGB = bUseSrgb;
-			this->Out_Texture->NeverStream = true;
-			break;
+			default:
+				this->Out_Texture = UTexture2D::CreateTransient(Size.X, Size.Y, PF_B8G8R8A8);
+				this->Out_Texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+				this->Out_Texture->SRGB = bUseSrgb;
+				this->Out_Texture->NeverStream = true;
+				break;
 		}
 
 		FTexture2DMipMap& Rs_Texture_Mip = Out_Texture->GetPlatformData()->Mips[0];
@@ -244,8 +232,8 @@ void ARs_Stream::Rs_Get_Stream()
 		Rs_Texture_Mip.BulkData.Unlock();
 		Out_Texture->UpdateResource();
 
-		this->OnFrameCaptured();
-		this->DelegateFrameCapture.Broadcast();
+		this->OnFrameCaptured_GameThread();
+		this->DelegateRs_GameThread.Broadcast();
 		return;
 	}
 
@@ -263,8 +251,8 @@ void ARs_Stream::Rs_Get_Stream()
 
 		FlushRenderingCommands();
 
-		this->OnFrameCaptured();
-		this->DelegateFrameCapture.Broadcast();
+		this->OnFrameCaptured_GameThread();
+		this->DelegateRs_GameThread.Broadcast();
 		return;
 	}
 }

@@ -124,7 +124,7 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*
 	return true;
 }
 
-bool UFF_RealSenseBPLibrary::Realsense_Buffer_Array(FRealSenseTextureBuffer BufferStruct, TArray<uint8>& Out_Array)
+bool UFF_RealSenseBPLibrary::Realsense_Buffer_Array(TArray<uint8>& Out_Array, FRealSenseTextureBuffer BufferStruct)
 {
 	if (!BufferStruct.Buffer || BufferStruct.BufferSize <= 0)
 	{
@@ -136,6 +136,55 @@ bool UFF_RealSenseBPLibrary::Realsense_Buffer_Array(FRealSenseTextureBuffer Buff
 
 	memcpy(TempArray.GetData(), BufferStruct.Buffer, BufferStruct.BufferSize);
 	Out_Array = TempArray;
+
+	return true;
+}
+
+bool UFF_RealSenseBPLibrary::GetBufferAsUtf8(FString& Out_Utf8, FRealSenseTextureBuffer BufferStruct)
+{
+	if (BufferStruct.BufferSize == 0)
+	{
+		return false;
+	}
+
+	if (!BufferStruct.Buffer)
+	{
+		return false;
+	}
+
+	int32 Index = 0;
+	int32 Length = 0x7FFFFFFF;
+
+	if (Index < 0)
+	{
+		Length += Index;
+		Index = 0;
+	}
+
+	if (Length > BufferStruct.BufferSize - Index)
+	{
+		Length = BufferStruct.BufferSize - Index;
+	}
+
+	const FUTF8ToTCHAR Src(reinterpret_cast<const ANSICHAR*>(BufferStruct.Buffer + Index), Length);
+	Out_Utf8 = FString(Src.Length(), Src.Get());
+
+	return true;
+}
+
+bool UFF_RealSenseBPLibrary::GetBufferAsBase64(FString& Out_Base64, FRealSenseTextureBuffer BufferStruct)
+{
+	if (BufferStruct.BufferSize == 0)
+	{
+		return false;
+	}
+
+	if (!BufferStruct.Buffer)
+	{
+		return false;
+	}
+
+	Out_Base64 = FBase64::Encode(BufferStruct.Buffer, BufferStruct.BufferSize, EBase64Mode::UrlSafe);
 
 	return true;
 }

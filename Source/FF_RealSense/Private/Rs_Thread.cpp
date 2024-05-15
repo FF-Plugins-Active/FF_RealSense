@@ -5,6 +5,9 @@
 // Custom Includes.
 #include "Rs_Stream.h"
 
+// External Includes.
+#include "FF_QR_ProcessorBPLibrary.h"
+
 // Sets default values
 FRs_Thread::FRs_Thread(ARs_Stream* In_Parent_Actor)
 {
@@ -62,7 +65,7 @@ void FRs_Thread::Callback_Stream()
 	rs2_frame* Rs_Frames = rs2_pipeline_wait_for_frames(Parent_Actor->Rs_Pipeline, Parent_Actor->TimeOut, NULL);
 	rs2_frame* First_Frame = rs2_extract_frame(Rs_Frames, 0, NULL);
 
-	auto BufferCallback = [](rs2_frame* First_Frame)->FRealSenseTextureBuffer
+	auto BufferCallback = [](rs2_frame* First_Frame, FVector2D Size)->FRealSenseTextureBuffer
 		{
 			int64 BufferSize = rs2_get_frame_data_size(First_Frame, NULL);
 
@@ -74,6 +77,7 @@ void FRs_Thread::Callback_Stream()
 			FRealSenseTextureBuffer CurrentFrame;
 			CurrentFrame.Buffer = (uint8_t*)(rs2_get_frame_data(First_Frame, NULL));
 			CurrentFrame.BufferSize = BufferSize;
+			CurrentFrame.ImageSize = Size;
 
 			return CurrentFrame;
 		};
@@ -82,59 +86,49 @@ void FRs_Thread::Callback_Stream()
 
 	switch (StreamType)
 	{
-		case ERsStreamType::None:
-			return;
-
-		case ERsStreamType::Point_Cloud:
-			return;
-		
 		case ERsStreamType::Color:
-			{
-				CurrentFrame = BufferCallback(First_Frame);
-				break;
-			}
+			
+			CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
+			break;
 		
 		case ERsStreamType::Infrared:
-			{
-				CurrentFrame = BufferCallback(First_Frame);
-				break;
-			}
+			
+			CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
+			break;
 
 		case ERsStreamType::Depth:
-			{
-				CurrentFrame = BufferCallback(First_Frame);
-				break;
-			}
-		
+			
+			CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
+			break;
+
 		case ERsStreamType::QR:
+
 			{
-				CurrentFrame = BufferCallback(First_Frame);
+				CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
 
-				FString ZXing_Error = "";
-				TArray<FZXingScanResult> Temp_Qr_Results;
-
-				if (UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(Temp_Qr_Results, ZXing_Error, CurrentFrame.Buffer, FIntRect((int32)Parent_Actor->Size.X, (int32)Parent_Actor->Size.Y), ZXing::ImageFormat::BGRX))
-				{
-					CurrentFrame.QR_Params = Temp_Qr_Results;
-				}
-
-				break;
+				FString ErrorCode;
+				UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(CurrentFrame.ZXingResults, ErrorCode, CurrentFrame.Buffer, CurrentFrame.ImageSize, ZXing::ImageFormat::BGRX);
 			}
+
+			break;
 
 		case ERsStreamType::Distance:
 
 			if (rs2_is_frame_extendable_to(First_Frame, RS2_EXTENSION_DEPTH_FRAME, NULL) != 0)
 			{
 				CurrentFrame.Distance = rs2_depth_frame_get_distance(First_Frame, Parent_Actor->Distance_Origin.X, Parent_Actor->Distance_Origin.Y, NULL);
-				break;
 			}
+
+			break;
 			
 		default:
-			{
-				CurrentFrame = BufferCallback(First_Frame);
-				break;
-			}
+			
+			CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
+			break;
 	}
+
+	this->Parent_Actor->DelegateRs_Runnable.Broadcast(CurrentFrame);
+	this->Parent_Actor->OnFrameCaptured_Runnable(CurrentFrame);
 
 	if (!Parent_Actor->Rs_Circ_Queue_Frame.Enqueue(CurrentFrame))
 	{

@@ -5,11 +5,9 @@
 UENUM(BlueprintType)
 enum class ERsStreamType : uint8
 {
-	None			UMETA(DisplayName = "None"),
 	Color			UMETA(DisplayName = "Color"),
 	Infrared		UMETA(DisplayName = "Infrared"),
 	Depth			UMETA(DisplayName = "Depth"),
-	Point_Cloud		UMETA(DisplayName = "Point Cloud"),
 	Distance		UMETA(DisplayName = "Distance"),
 	QR				UMETA(DisplayName = "QR"),
 };

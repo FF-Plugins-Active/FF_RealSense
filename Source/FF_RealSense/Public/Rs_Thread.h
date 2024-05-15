@@ -53,6 +53,6 @@ private:
 
 	bool bStartThread = false;
 
-	ERsStreamType StreamType;
+	ERsStreamType StreamType = ERsStreamType::Color;
 
 };

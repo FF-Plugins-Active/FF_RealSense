@@ -4,11 +4,11 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-// External Includes.
-#include "FF_QR_ProcessorBPLibrary.h"
-
 // Custom Includes.
 #include "Rs_Enums.h"
+
+// External Includes.
+#include "FF_QR_ProcessorBPLibrary.h"
 
 THIRD_PARTY_INCLUDES_START
 #include <librealsense2/rs.hpp>
@@ -29,13 +29,16 @@ public:
 	int64 BufferSize = 0;
 
 	UPROPERTY(BlueprintReadOnly)
+	FVector2D ImageSize;
+
+	UPROPERTY(BlueprintReadOnly)
 	float Distance = 0;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FZXingScanResult> QR_Params;
+	ERsStreamType StreamType = ERsStreamType::Color;
 
 	UPROPERTY(BlueprintReadOnly)
-	ERsStreamType StreamType = ERsStreamType::None;
+	TArray<FZXingScanResult> ZXingResults;
 
 };
 
@@ -90,30 +93,33 @@ public:
 
 };
 
-UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FRsDelegateRotation, bool, bIsSuccessfull, FRotator, Out_Distance, FString, Out_Code);
-
 UCLASS()
 class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Init Android", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Init Android", ToolTip = "You HAVE to call this node once after Android permissions (camera and USB) granted and before using your Intel RealSense.", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
 	static void Realsense_Init_Android();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "FF_Realsense|System")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_List_Get(URsDeviceList*& Out_Device_List);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "FF_Realsense")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device", Keywords = "intel, realsense, device, get"), Category = "FF_Realsense")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device", Keywords = "intel, realsense, device, get"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_Get(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as Array", Keywords = "intel, realsense, device, delete"), Category = "FF_Realsense")
-	static bool Realsense_Buffer_Array(FRealSenseTextureBuffer BufferStruct, TArray<uint8>& Out_Array);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as Array", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
+	static bool Realsense_Buffer_Array(TArray<uint8>& Out_Array, FRealSenseTextureBuffer BufferStruct);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as UTF8", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
+	static bool GetBufferAsUtf8(FString& Out_Utf8, FRealSenseTextureBuffer BufferStruct);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as Base64Url", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
+	static bool GetBufferAsBase64(FString& Out_Base64, FRealSenseTextureBuffer BufferStruct);
 
 };

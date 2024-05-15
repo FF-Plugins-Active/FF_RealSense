@@ -15,7 +15,8 @@
 
 #include "Rs_Stream.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateFrameCapture);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateRs_GameThread);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateRs_Runnable, FRealSenseTextureBuffer, Out_Buffer);
 
 UCLASS()
 class FF_REALSENSE_API ARs_Stream : public AActor
@@ -66,7 +67,7 @@ public:
 	URsDeviceObject* In_Device = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
-	ERsStreamType StreamType = ERsStreamType::None;
+	ERsStreamType StreamType = ERsStreamType::Color;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	int32 StreamIndex = 0;
@@ -99,9 +100,15 @@ public:
 	virtual void Rs_Get_Stream();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "FF_RealSense")
-	void OnFrameCaptured();
+	void OnFrameCaptured_GameThread();
 
 	UPROPERTY(BlueprintAssignable, Category = "FF_RealSense")
-	FDelegateFrameCapture DelegateFrameCapture;
+	FDelegateRs_GameThread DelegateRs_GameThread;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "FF_RealSense")
+	void OnFrameCaptured_Runnable(FRealSenseTextureBuffer Out_Buffer);
+
+	UPROPERTY(BlueprintAssignable, Category = "FF_RealSense")
+	FDelegateRs_Runnable DelegateRs_Runnable;
 
 };

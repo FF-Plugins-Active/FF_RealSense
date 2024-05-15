@@ -12,31 +12,23 @@ public class FF_RealSense : ModuleRules
 
         bEnableUndefinedIdentifierWarnings = false;
         bEnableExceptions = true;
-        bUseRTTI = true;
+
+        bUseUnity = false;
 
         if (UnrealTargetPlatform.Win64 == Target.Platform)
         {
-            string Location_Realsense = "../Source/FF_RealSense/ThirdParty/Windows/include";
-            PrivateIncludePaths.Add(Location_Realsense);
-
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.lib"));
-            
-			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "realsense2.dll"));
-            //RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Windows", "libs", "Intel.Realsense.dll"));
-            
+            PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Win64", "include"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Win64", "lib", "realsense2.lib"));
+			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Win64", "lib", "realsense2.dll"));
 			PublicDelayLoadDLLs.Add("realsense2.dll");
-            //PublicDelayLoadDLLs.Add("Intel.Realsense.dll");
         }
 
         if (UnrealTargetPlatform.Android == Target.Platform)
         {
             PrivateDependencyModuleNames.Add("Launch");
 
-            string Location_Realsense = "../Source/FF_RealSense/ThirdParty/Android/include";
-            PrivateIncludePaths.Add(Location_Realsense);
-
+            PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Android", "include"));
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Android", "libs", "librealsense2.so"));
-
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(ModuleDirectory, "FF_RealSense_UPL_Android.xml"));
         }
 
@@ -44,6 +36,7 @@ public class FF_RealSense : ModuleRules
 			new string[]
 			{
 				"Core",
+                "FF_QR_Processor",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -55,10 +48,9 @@ public class FF_RealSense : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Projects",
+                "RenderCore",
                 "RHI",
-				"RenderCore",
-                "FF_QR_Processor",
+                "Projects",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
