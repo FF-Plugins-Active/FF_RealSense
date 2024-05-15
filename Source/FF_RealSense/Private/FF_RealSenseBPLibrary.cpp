@@ -20,6 +20,21 @@ UFF_RealSenseBPLibrary::UFF_RealSenseBPLibrary(const FObjectInitializer& ObjectI
 
 }
 
+void URsDeviceList::BeginDestroy()
+{
+	rs2_delete_device_list(this->Rs_Device_List);
+
+	Super::BeginDestroy();
+}
+
+void URsDeviceObject::BeginDestroy()
+{
+	rs2_delete_context(this->Rs_Context);
+	rs2_delete_device(this->Rs_Device);
+
+	Super::BeginDestroy();
+}
+
 void UFF_RealSenseBPLibrary::Realsense_Init_Android()
 {
 #ifdef __ANDROID__
@@ -59,20 +74,6 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_List_Get(URsDeviceList*& Out_Devic
 	return true;
 }
 
-bool UFF_RealSenseBPLibrary::Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code)
-{
-	if (IsValid(In_Device_List) == false)
-	{
-		Out_Code = "Device list is invalid.";
-		return false;
-	}
-
-	rs2_delete_device_list(In_Device_List->Rs_Device_List);
-	In_Device_List = nullptr;
-
-	return true;
-}
-
 bool UFF_RealSenseBPLibrary::Realsense_Device_Get(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex)
 {
 	if (IsValid(In_Device_List) == false)
@@ -105,21 +106,6 @@ bool UFF_RealSenseBPLibrary::Realsense_Device_Get(URsDeviceObject*& Out_Device, 
 	DeviceObject->Device_Serial = rs2_get_device_info(EachDevice, rs2_camera_info::RS2_CAMERA_INFO_SERIAL_NUMBER, NULL);
 
 	Out_Device = DeviceObject;
-
-	return true;
-}
-
-bool UFF_RealSenseBPLibrary::Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device)
-{
-	if (IsValid(In_Device) == false)
-	{
-		return false;
-	}
-	
-	rs2_delete_context(In_Device->Rs_Context);
-	rs2_delete_device(In_Device->Rs_Device);
-
-	In_Device = nullptr;
 
 	return true;
 }

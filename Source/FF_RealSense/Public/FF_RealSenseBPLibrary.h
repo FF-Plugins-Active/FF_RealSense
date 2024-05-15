@@ -55,6 +55,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int32 Rs_Device_Count = 0;
 
+	// ~URsDeviceList start.
+	void BeginDestroy();
+	// ~URsDeviceList finish.
+
 };
 
 UCLASS(BlueprintType)
@@ -91,6 +95,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsDepth = false;
 
+	// ~URsDeviceList start.
+	void BeginDestroy();
+	// ~URsDeviceList finish.
+
 };
 
 UCLASS()
@@ -104,14 +112,8 @@ class UFF_RealSenseBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device List", Keywords = "intel, realsense, devices, list, get"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_List_Get(URsDeviceList*& Out_Device_List);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device List", Keywords = "intel, realsense, devices, list, delete, remove"), Category = "Frozen Forest|FF_RealSense")
-	static bool Realsense_Device_List_Delete(UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code);
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Device", Keywords = "intel, realsense, device, get"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Device_Get(URsDeviceObject*& Out_Device, UPARAM(ref)URsDeviceList*& In_Device_List, FString& Out_Code, int32 DeviceIndex);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Delete Device", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
-	static bool Realsense_Device_Delete(UPARAM(ref)URsDeviceObject*& In_Device);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Realsense - Get Buffer as Array", Keywords = "intel, realsense, device, delete"), Category = "Frozen Forest|FF_RealSense")
 	static bool Realsense_Buffer_Array(TArray<uint8>& Out_Array, FRealSenseTextureBuffer BufferStruct);
