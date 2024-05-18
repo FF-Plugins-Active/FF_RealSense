@@ -107,7 +107,7 @@ void FRs_Thread::Callback_Stream()
 				CurrentFrame = BufferCallback(First_Frame, FVector2D(this->Parent_Actor->Size.X, this->Parent_Actor->Size.Y));
 
 				FString ErrorCode;
-				UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(CurrentFrame.ZXingResults, ErrorCode, CurrentFrame.Buffer, CurrentFrame.ImageSize, ZXing::ImageFormat::BGRX);
+				UFF_QR_ProcessorBPLibrary::ZXing_Decoder_Callback(CurrentFrame.ZXingResults, ErrorCode, CurrentFrame.Buffer, CurrentFrame.ImageSize, ZXing::ImageFormat::BGRA);
 			}
 
 			break;
