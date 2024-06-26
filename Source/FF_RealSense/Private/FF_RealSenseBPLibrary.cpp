@@ -7,7 +7,7 @@
 #include "Rs_Stream.h"
 
 UFF_RealSenseBPLibrary::UFF_RealSenseBPLibrary(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 
 }
