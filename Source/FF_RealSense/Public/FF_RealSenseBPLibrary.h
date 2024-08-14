@@ -23,13 +23,13 @@ struct FF_REALSENSE_API FRealSenseTextureBuffer
 
 public:
 
-	uint8* Buffer = NULL;
+	uint8* Buffer = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	int64 BufferSize = 0;
 
 	UPROPERTY(BlueprintReadOnly)
-	FVector2D ImageSize;
+	FVector2D ImageSize = FVector2D();
 
 	UPROPERTY(BlueprintReadOnly)
 	float Distance = 0;
@@ -49,8 +49,8 @@ class FF_REALSENSE_API URsDeviceList : public UObject
 
 public:
 
-	rs2_device_list* Rs_Device_List;
-	rs2_context* Rs_Context;
+	rs2_device_list* Rs_Device_List = nullptr;
+	rs2_context* Rs_Context = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 Rs_Device_Count = 0;
@@ -68,11 +68,11 @@ class FF_REALSENSE_API URsDeviceObject : public UObject
 
 public:
 
-	rs2_device* Rs_Device;
-	rs2_context* Rs_Context;
+	rs2_device* Rs_Device = nullptr;
+	rs2_context* Rs_Context = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	FVector2D Frame_Resolution;
+	FVector2D Frame_Resolution = FVector2D();
 
 	UPROPERTY(BlueprintReadOnly)
 	FString Device_Firmware;
