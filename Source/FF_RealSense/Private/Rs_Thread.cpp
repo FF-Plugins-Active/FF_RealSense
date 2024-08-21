@@ -19,12 +19,11 @@ FRs_Thread::~FRs_Thread()
 {
 	if (RunnableThread)
 	{
-		RunnableThread->Suspend(true);
-		bStartThread = false;
-		RunnableThread->Suspend(false);
-		RunnableThread->Kill(true);
-		RunnableThread->WaitForCompletion();
-		delete RunnableThread;
+		this->RunnableThread->Kill(true);
+		this->RunnableThread->WaitForCompletion();
+
+		delete this->RunnableThread;
+		this->RunnableThread = nullptr;
 	}
 }
 
